@@ -1,8 +1,10 @@
 """Explicitly opt-in paid endpoint smoke. Never run automatically in normal CI.
 
-Set AGENT_CORE_LIVE=1, AGENT_CORE_PROVIDER=openai|anthropic,
-AGENT_CORE_MODEL and the corresponding OPENAI_API_KEY or ANTHROPIC_API_KEY.
-This sends a real request and may incur provider charges.
+Set AGENT_CORE_LIVE=1, AGENT_CORE_PROVIDER=openai|anthropic|groq,
+AGENT_CORE_MODEL and the corresponding OPENAI_API_KEY, ANTHROPIC_API_KEY or
+GROQ_API_KEY. Groq additionally requires AGENT_CORE_GROQ_FREE_TIER=1, confirming
+the key belongs to a free-plan account. This sends a real request and may incur
+provider charges (OpenAI, Anthropic) or consume free-tier quota (Groq).
 """
 
 import asyncio
@@ -38,14 +40,23 @@ async def main() -> None:
 
         key = os.environ["OPENAI_API_KEY"]
         model = OpenAIChatModel(model_id, key, streaming=native_stream)
+    elif provider == "groq":
+        if os.environ.get("AGENT_CORE_GROQ_FREE_TIER") != "1":
+            raise SystemExit("Confirm a Groq free-plan account with AGENT_CORE_GROQ_FREE_TIER=1.")
+        from agent_core.providers.groq import GroqModel
+
+        key = os.environ["GROQ_API_KEY"]
+        model = GroqModel(model_id, key, streaming=native_stream)
     elif provider == "anthropic":
         from agent_core.providers.anthropic import AnthropicModel
 
         key = os.environ["ANTHROPIC_API_KEY"]
         model = AnthropicModel(model_id, key, streaming=native_stream)
     else:
-        raise SystemExit("Only openai or anthropic is supported.")
+        raise SystemExit("Only openai, anthropic or groq is supported.")
     tool = Tool.from_callable(sum_integers)
+    # Groq reasoning models count hidden reasoning against max_completion_tokens.
+    output_tokens = 512 if provider == "groq" else 128
     with tempfile.TemporaryDirectory() as directory:
         store = Store(Path(directory) / "live.sqlite")
         try:
@@ -55,7 +66,7 @@ async def main() -> None:
                 store,
                 Policy(allowed_tools=frozenset({"sum_integers"})),
                 secrets=(key,),
-                limits=Limits(turns=3, tools=1, seconds=60, output_tokens=128),
+                limits=Limits(turns=3, tools=1, seconds=60, output_tokens=output_tokens),
             )
             run = await runtime.run(
                 "Call sum_integers once with left=17 and right=25. "
@@ -82,6 +93,7 @@ async def main() -> None:
                         "status": run.status,
                         "tool_count": run.tool_count,
                         "model_turns": run.turns,
+                        "output_token_limit": output_tokens,
                         "observation_verified": True,
                         "usage": run.usage.model_dump(),
                     },

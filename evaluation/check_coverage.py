@@ -15,6 +15,7 @@ critical = {
     "sse.py",
     "http.py",
     "mcp.py",
+    "groq.py",
 }
 failed = []
 for path, entry in report["files"].items():

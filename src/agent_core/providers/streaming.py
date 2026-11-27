@@ -135,6 +135,14 @@ async def stream(
             else:
                 if frame.event != "message":
                     raise ValueError("unsupported event")
+                event = model.normalize_stream_event(event)
+                for name, value in model.stream_metadata(event).items():
+                    previous = envelope.get(name)
+                    envelope[name] = (
+                        {**previous, **value}
+                        if isinstance(previous, dict) and isinstance(value, dict)
+                        else value
+                    )
                 for key in ("id", "model", "created", "system_fingerprint"):
                     if key in event:
                         if key in envelope and envelope[key] != event[key]:
@@ -142,10 +150,11 @@ async def stream(
                         envelope[key] = event[key]
                 choices = event["choices"]
                 if event.get("usage") is not None:
-                    if "usage" in envelope:
+                    if "usage" not in envelope:
+                        envelope["usage"] = event["usage"]
+                        yield ModelDelta(kind="usage", data=event["usage"])
+                    elif not model.repeats_usage(envelope["usage"], event["usage"]):
                         raise ValueError("duplicate usage")
-                    envelope["usage"] = event["usage"]
-                    yield ModelDelta(kind="usage", data=event["usage"])
                 if choices == []:
                     if not finished or event.get("usage") is None:
                         raise ValueError("unexpected empty choices")

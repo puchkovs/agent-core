@@ -147,6 +147,16 @@ class OpenAIChatModel:
         ) as exc:
             raise CoreError("provider_response") from exc
 
+    def normalize_stream_event(self, event: dict[str, Json]) -> dict[str, Json]:
+        return event
+
+    def stream_metadata(self, event: dict[str, Json]) -> dict[str, Json]:
+        return {}
+
+    def repeats_usage(self, first: Json, second: Json) -> bool:
+        """Whether a second usage receipt may be ignored; the default is never."""
+        return False
+
     def stream(self, request: Request) -> AsyncGenerator[ModelDelta, None]:
         return stream(self, request, anthropic=False)
 

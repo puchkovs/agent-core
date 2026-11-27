@@ -16,12 +16,13 @@ def load_smoke():
 
 
 @pytest.mark.parametrize("correct_receipt", [True, False])
-@pytest.mark.parametrize("provider", ["openai", "anthropic"])
+@pytest.mark.parametrize("provider", ["openai", "anthropic", "groq"])
 @pytest.mark.parametrize("streaming", ["0", "1"])
 async def test_live_procedure_uses_actual_observation_without_network(
     monkeypatch, capsys, provider, streaming, correct_receipt
 ):
     import agent_core.providers.anthropic as anthropic
+    import agent_core.providers.groq as groq
     import agent_core.providers.openai_chat as openai
 
     class Model:
@@ -49,6 +50,7 @@ async def test_live_procedure_uses_actual_observation_without_network(
         assert model == "fixture-model" and key == "fixture-key"
         return Model()
 
+    monkeypatch.setattr(groq, "GroqModel", factory)
     monkeypatch.setattr(openai, "OpenAIChatModel", factory)
     monkeypatch.setattr(anthropic, "AnthropicModel", factory)
     for name, value in {
@@ -56,6 +58,8 @@ async def test_live_procedure_uses_actual_observation_without_network(
         "AGENT_CORE_PROVIDER": provider,
         "AGENT_CORE_MODEL": "fixture-model",
         "AGENT_CORE_STREAMING": streaming,
+        "AGENT_CORE_GROQ_FREE_TIER": "1",
+        "GROQ_API_KEY": "fixture-key",
         "OPENAI_API_KEY": "fixture-key",
         "ANTHROPIC_API_KEY": "fixture-key",
     }.items():
@@ -70,10 +74,20 @@ async def test_live_procedure_uses_actual_observation_without_network(
     assert evidence["observation_verified"] is True
     assert evidence["model_turns"] == 2 and evidence["tool_count"] == 1
     assert evidence["native_streaming"] == (streaming == "1")
+    assert evidence["output_token_limit"] == (512 if provider == "groq" else 128)
     assert "fixture-key" not in json.dumps(evidence)
 
 
 async def test_live_procedure_requires_explicit_opt_in(monkeypatch):
     monkeypatch.delenv("AGENT_CORE_LIVE", raising=False)
     with pytest.raises(SystemExit, match="Live testing disabled"):
+        await load_smoke().main()
+
+
+async def test_groq_live_procedure_requires_free_plan_confirmation(monkeypatch):
+    monkeypatch.setenv("AGENT_CORE_LIVE", "1")
+    monkeypatch.setenv("AGENT_CORE_PROVIDER", "groq")
+    monkeypatch.setenv("AGENT_CORE_MODEL", "fixture")
+    monkeypatch.delenv("AGENT_CORE_GROQ_FREE_TIER", raising=False)
+    with pytest.raises(SystemExit, match="Groq free-plan"):
         await load_smoke().main()

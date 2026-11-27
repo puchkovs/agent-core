@@ -15,7 +15,7 @@ from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 secret = re.compile(
-    rb"gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{24,}|"
+    rb"gsk_[A-Za-z0-9]{20,}|gh[pousr]_[A-Za-z0-9]{30,}|sk-[A-Za-z0-9]{24,}|"
     rb"-----BEGIN (?:RSA |OPENSSH )?PRIVATE KEY-----|AKIA[A-Z0-9]{16}"
 )
 original = "c931cf976fa51e4eb664f529e818c40df2c872d0"
