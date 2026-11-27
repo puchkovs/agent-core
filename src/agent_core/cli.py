@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import sqlite3
 from pathlib import Path
 
 from . import scenarios
@@ -62,11 +63,13 @@ def main(argv: list[str] | None = None) -> int:
     artifact.add_argument("--offset", type=int, default=0)
     artifact.add_argument("--limit", type=int, default=4096)
     args = parser.parse_args(argv)
-    store = Store(args.db)
+    store = None
     try:
+        store = Store(args.db)
         if args.command == "show":
             _show(store, store.load(args.run_id))
         elif args.command == "events":
+            store.load(args.run_id)
             cursor = 0
             while page := store.events(args.run_id, cursor):
                 for event in page:
@@ -102,8 +105,16 @@ def main(argv: list[str] | None = None) -> int:
             if run.status in {Status.FAILED, Status.BUDGET, Status.CANCELLED}:
                 return 1
         return 0
-    except (CoreError, ValueError) as exc:
-        print(json.dumps({"error": exc.code if isinstance(exc, CoreError) else "invalid_input"}))
+    except (CoreError, ValueError, sqlite3.Error, OSError) as exc:
+        code = (
+            exc.code
+            if isinstance(exc, CoreError)
+            else "invalid_input"
+            if isinstance(exc, ValueError)
+            else "storage_error"
+        )
+        print(json.dumps({"error": code}))
         return 2
     finally:
-        store.close()
+        if store is not None:
+            store.close()

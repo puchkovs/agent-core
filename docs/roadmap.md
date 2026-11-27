@@ -28,7 +28,7 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 10 Providers | Offline complete; live gate blocked | Official contract review, deterministic fixtures, opt-in live matrix |
 | 11 Native streaming | Offline complete; live gate blocked | Bounded deltas and complete validated assembly; interruption tests |
 | 12 Optional MCP | Complete for documented HTTP/SDK scope | Versioned protocol/transport scope; local server conformance through Tool Engine |
-| 13 SDK/CLI | Next | Complete continuation, cleanup and structured-error flows |
-| 14 Evaluation | Pending | Expanded scenarios and raw reproducible overhead evidence |
+| 13 SDK/CLI | Complete for documented local SDK/CLI | Complete continuation, cleanup and structured-error flows |
+| 14 Evaluation | Next | Expanded scenarios and raw reproducible overhead evidence |
 | 15 Documentation | Pending | Verify supported commands and compatibility scope |
 | 16 Final gates | Pending | All local/CI/package/security gates; explicit release blockers |

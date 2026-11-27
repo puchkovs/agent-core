@@ -205,3 +205,17 @@ Full make check: 255 passing tests, 97.41% combined coverage; MCP 96%, streaming
 critical 90% component gate. Exact scope and resource-limit caveats: docs/mcp.md.
 Native-streaming CI run 45930099019 passed with Node.js 24 actions.
 Next: Phase 13 SDK/CLI cleanup and structured storage errors; phases 14–16 remain.
+
+## Phase 13 SDK and CLI — 2026-11-27
+
+Added Store context-manager cleanup on normal exit and host exceptions. CLI now
+returns structured storage_error for database initialization/I/O failures and
+unknown_run for events on absent runs; raw storage details are not emitted.
+Existing continuation, approval, cancellation, reconciliation, schema, typing and
+cleanup flows remain verified, including native streaming and optional MCP.
+
+Full make check passed: 257 tests, 97.42% combined coverage, all critical modules
+above 90%, strict mypy, Ruff lint/format and three demos. Optional MCP pinned
+advisory scan returned no known vulnerabilities; raw mcp-advisories.json retained.
+Next: Phase 14 record updated benchmark/evaluation evidence, then documentation
+and final verification. Live endpoint verification remains blocked by cost authority.

@@ -91,3 +91,28 @@ def test_cli_approval_and_continuation(tmp_path, capsys):
     assert main(base + ["resume", run_id]) == 0
     assert "completed" in capsys.readouterr().out
     assert (tmp_path / "notes" / "plan.md").read_text().startswith("# Plan")
+
+
+def test_cli_storage_initialization_error_and_unknown_events(tmp_path, capsys):
+    from agent_core.cli import main
+
+    path = tmp_path / "not-database.sqlite"
+    path.write_text("private storage content")
+    assert main(["--db", str(path), "demo"]) == 2
+    assert __import__("json").loads(capsys.readouterr().out) == {"error": "storage_error"}
+    assert main(["--db", str(tmp_path / "good.sqlite"), "events", "unknown"]) == 2
+    assert __import__("json").loads(capsys.readouterr().out) == {"error": "unknown_run"}
+
+
+def test_store_context_closes_on_host_exception(tmp_path):
+    import sqlite3
+
+    import pytest
+
+    from agent_core import Store
+
+    with pytest.raises(ValueError):
+        with Store(tmp_path / "context.sqlite") as store:
+            raise ValueError("host failure")
+    with pytest.raises(sqlite3.ProgrammingError):
+        store.connection.execute("SELECT 1")

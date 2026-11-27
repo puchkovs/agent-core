@@ -35,3 +35,7 @@ pauses, 1 for failed/budget/cancelled driven runs, and 2 for command errors.
 The CLI intentionally does not load arbitrary Python plugins or run a model
 endpoint automatically. Use the SDK for application-specific host composition and
 `evaluation/live_smoke.py` for explicit opt-in endpoint verification.
+
+Database initialization and I/O errors return structured storage_error with exit
+code 2. Events for an unknown run return unknown_run. Storage diagnostics and
+provider credentials are not printed as part of those error records.

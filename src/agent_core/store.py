@@ -9,6 +9,7 @@ import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
+from types import TracebackType
 
 from .contracts import TRANSITIONS, CoreError, Event, Json, Operation, Run, canonical, digest
 
@@ -48,6 +49,17 @@ class Store:
                 COMMIT;
             """)
         os.chmod(self.path, 0o600)
+
+    def __enter__(self) -> Store:
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self.close()
 
     def close(self) -> None:
         self.connection.close()

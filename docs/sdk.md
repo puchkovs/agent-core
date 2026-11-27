@@ -50,3 +50,7 @@ The runtime parses and validates final JSON; invalid output produces
 Generated callable inputs undergo strict Pydantic validation before dispatch for
 both sync and async callables, in addition to JSON Schema validation. Tool timeouts
 must be positive and finite.
+
+Use `with Store(path) as store:` for deterministic database cleanup, including
+host exceptions. Keep MCP connection contexts open while any registered runtime
+is running; see [MCP](mcp.md). For typed provisional deltas see [streaming](streaming.md).
