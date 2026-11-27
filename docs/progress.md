@@ -307,7 +307,7 @@ remain outside the repository. Without the actual key in this process, exact
 literal-key comparison cannot be performed; pattern checks are scoped evidence.
 No history was rewritten, no credentials printed, no paid requests/retries made.
 
-## Groq profile and live-gate handover — 2026-11-27
+## Groq profile and live-gate preparation — 2026-11-27
 
 Started at 75f7453 (remote CI green). Added `GroqModel` (see providers.md): shared
 envelope/SSE validation, `x_groq` usage normalization, reasoning controls only for
@@ -355,3 +355,32 @@ The live procedure in live-verification.md is now one complete script (hidden ke
 prompt, model availability check, both scenarios, evidence validation, literal-key
 leak check, cleanup). Its validator and leak check were exercised against synthetic
 evidence only; no Groq request has been sent and the version remains 0.1.0a1.
+
+## Groq live verification and 0.1.0 preparation — 2026-11-27
+
+Live verification (operator terminal, source commit bb2981e, Groq free tier):
+`openai/gpt-oss-20b`, API profile `groq-chat:https://api.groq.com/openai/v1/chat/completions`.
+Complete-response: status completed, 2 turns, 1 tool execution, observation verified,
+usage 534 in / 69 out. Native streaming: completed, 2 turns, 1 tool execution,
+observation verified, usage 531 in / 66 out. Four model requests total (ceiling six),
+no automatic retries, output limit 512 tokens per turn. The operator's literal-key
+comparison of the evidence directory passed and the key was cleared from the
+terminal environment. The evidence files were independently re-validated here
+(structure, status, counts, usage types, no credential patterns) and sanitized into
+evaluation/results/groq-live-verification.json. No live request was made in this
+session and none is to be repeated. Earlier OpenAI attempts failed with
+provider_rate_limit; Anthropic was never live-tested.
+
+Version changed to 0.1.0 (pyproject, `__version__`, archive-audit file names now
+derived from the project version, new version-consistency test). Final gates:
+`make check` passed with 296 tests and 97.52% combined coverage (critical-component
+gate passed), strict mypy, Ruff lint/format, three demos. Source and wheel built;
+clean core, provider-extra and MCP installations passed installed SDK/CLI smoke and
+`pip check` (installed version 0.1.0; provider adapters construct from the wheel).
+pip-audit on the runtime and MCP locks found no known vulnerabilities. The archive
+audit passed over 261 historical blobs; wheel/sdist metadata and members showed no
+credential patterns; git fsck was clean; refs are main and origin/main only, with no
+tags. Provenance scans found no references to internal research, other inspected
+projects or handover material in tracked files, commit messages or archives; one
+earlier progress heading that used such wording was renamed. No tag, GitHub Release
+or package upload exists.
