@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-27",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "tests_passed": 120,
+  "combined_coverage": 97.52916952642416,
+  "statement_coverage": 98.1965734896303,
+  "branch_coverage": 95.40229885057471,
+  "critical": {
+    "context.py": 100.0,
+    "contracts.py": 100.0,
+    "policy.py": 100.0,
+    "runtime.py": 96.3718820861678,
+    "store.py": 100.0,
+    "tools.py": 100.0
+  },
+  "gates": {
+    "ruff": "passed",
+    "format": "passed",
+    "strict_mypy": "passed",
+    "offline_examples": 3,
+    "critical_coverage_90_percent": "passed",
+    "process_crash_boundaries": 4,
+    "live_provider": "not_run",
+    "remote_ci": "not_run",
+    "publication": "not_performed",
+    "build_sdist_and_wheel": "passed",
+    "clean_install_core": "passed",
+    "clean_install_providers": "passed",
+    "installed_offline_network_guard": "passed",
+    "runtime_dependency_advisories": {
+      "dependencies": 16,
+      "known_vulnerabilities": 0
+    },
+    "cleanliness_scan": "passed",
+    "local_markdown_links": "passed"
+  },
+  "tools": {
+    "pydantic": "2.14.4",
+    "jsonschema": "4.26.0",
+    "httpx": "0.28.1",
+    "pytest": "9.2.0",
+    "pytest-asyncio": "1.5.0",
+    "pytest-cov": "7.1.0",
+    "ruff": "0.17.6",
+    "mypy": "2.4.1",
+    "build": "1.6.1",
+    "pip-audit": "2.10.1"
+  }
+}

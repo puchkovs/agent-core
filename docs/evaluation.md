@@ -39,3 +39,7 @@ The elapsed measurement includes database creation and filesystem synchronizatio
 It excludes network/model latency and measures no LLM intelligence. Thread startup,
 cache, filesystem and shared scheduling affect the numbers. Reproduce the command
 and compare configurations explicitly before drawing performance conclusions.
+
+Measured candidate: median 2.0021885 ms, nearest-rank p95 2.312309 ms across
+100 samples. See [raw results](../evaluation/results/overhead.json) and
+[final verification](final-verification.md) for source provenance and caveats.

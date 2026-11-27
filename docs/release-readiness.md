@@ -1,19 +1,37 @@
 # Release readiness
 
-Version: 0.1.0a1 engineering candidate, not final v0.1.0.
+**0.1.0a1 engineering candidate. Final v0.1.0 gate is not passed.**
 
-The offline runtime, approvals, persistence, two provider contracts, SDK, CLI and
-three demonstrations are implemented. Required offline checks are being completed
-and recorded in testing.md. MCP is explicitly deferred by ADR 3.
+Implemented: single-agent dynamic tools, typed contracts, schemas/semantic
+checks, policies, bound approval pauses, limits/cancellation, persistent sessions,
+SQLite journal/checkpoints, conservative reconciliation, context/artifact limits,
+lifecycle events, usage/durations, two provider contracts, SDK, CLI, original demos,
+reproducible evaluation, package builds and CI definitions.
 
-## Remaining mandatory gate
+Offline gates passed: 120 tests, 97.53% combined coverage with every critical
+component above 90%, lint, formatting, strict typing, three examples, real process
+crashes, source/wheel builds, two clean installs, installed offline smoke,
+dependency consistency, advisory check and repository/package scans.
+See [executed verification](testing.md) for exact scope and limitations.
 
-At least one real provider endpoint must pass an explicitly authorized live
-smoke with a declared model and API profile. Neither HTTP fixtures nor documentation
-inspection establish that gate. No paid calls are authorized by the current task.
-The second provider also needs a concrete supported-model compatibility record
-before broader interoperability claims.
+## Remaining release work
 
-Do not tag v0.1.0, publish to GitHub or upload to a package index from this session.
-CI workflow files are prepared; remote CI has not run. Local candidate builds
-are useful for review and continuation, not a claim of final release acceptance.
+1. Obtain explicit cost authority and host credentials for live model testing.
+2. Select a real model and verify tool use against its actual provider endpoint.
+   Preserve API profile, date, usage and evidence of the tool invocation.
+3. Verify a real model for the second implemented contract before claiming live
+   support for that adapter. Fix any differences with regression fixtures.
+4. Review the intended streaming scope: this candidate implements lifecycle
+   streaming and complete-response normalization, not provider token deltas.
+   Native provider token streaming would require an additional tested contract.
+5. Update compatibility/readiness, rerun relevant gates, build the final version
+   and perform a final clean install and archive audit before tagging v0.1.0.
+
+MCP is explicitly deferred by ADR 3 and has no compatibility claim. The current
+candidate also has no distributed ownership, hard process isolation or arbitrary
+external exactly-once guarantee. Advisory results are a point-in-time check, not
+a comprehensive security certification.
+
+No paid provider call, remote CI execution, release tag or remote publication
+was made in this session. Do not publish from this handoff without separate
+authorization. Complete history and precise continuation instructions are supplied.

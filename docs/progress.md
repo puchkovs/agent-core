@@ -9,13 +9,14 @@
 | 4 | Implemented and fixture-verified for two contracts; live endpoint gate pending |
 | 5 | Complete candidate scope: context/artifacts, lifecycle cursors, usage/durations, SDK and CLI |
 | 6 | Deliberately deferred: no MCP compatibility claim |
-| 7 | Three verified original demos and regression suite; overhead measurement next |
-| 8 | Offline gates passing; build/install, advisory and final audit underway; final release blocked by live gate |
+| 7 | Complete offline evaluation: three original demos, 120 tests and 100 raw overhead samples |
+| 8 | Offline gates complete; final release blocked by live provider gate |
 
 Latest offline gate: 120 tests pass, 97.53% combined statement/branch coverage;
 critical modules independently exceed 90%. Ruff, strict mypy and three examples
 pass. Real subprocess crashes have been verified at dispatch, outcome and model
 response boundaries, including loss of the usage receipt. No real provider call, remote CI run or publication occurred.
 
-Next: finish build/install/advisory checks, record raw overhead measurements,
-complete handoff audit and archive. Then follow continuation.md for live checks.
+Build/install/advisory and package audit passed. Handoff includes the full local
+history, bundle and candidate distributions. Next: follow continuation.md for
+explicitly authorized live compatibility checks; do not restart completed work.

@@ -1,13 +1,51 @@
-# Verification
+# Executed verification
 
-Foundation verification (2026-11-27, CPython 3.12.14, Linux):
+2026-11-27; CPython 3.12.14; Linux x86_64; SQLite WAL, synchronous FULL.
+Exact tool versions and raw summaries are in
+[offline-verification.json](../evaluation/results/offline-verification.json).
 
-- `ruff check src tests`: passed.
-- `ruff format --check src tests`: formatting applied, final gate still pending.
-- `mypy src`: passed, strict mode, 8 source modules.
-- `pytest -q`: 47 tests passed.
+| Gate | Actual result |
+|---|---|
+| Ruff lint and format | Passed, 35 Python files formatted |
+| Strict mypy | Passed, 15 source modules |
+| Offline pytest suite | 120 passed; no skipped live tests disguised as coverage |
+| Combined statement/branch coverage | 97.53% |
+| Statement coverage | 98.20% (1089/1109) |
+| Branch coverage | 95.40% (332/348) |
+| Critical runtime coverage | Runtime 96.37%; contracts, store, tools, policy and context 100% |
+| Original examples | Three passed |
+| Real process-death/restart checks | Passed at model-start, model-envelope, dispatch and outcome boundaries |
+| Source and wheel builds | Passed; build backend hatchling 1.33.0 |
+| Clean minimal-core installation | Passed; optional HTTP dependency absent |
+| Clean provider-extra installation | Passed |
+| Installed-package offline smoke | Passed in both clean environments with IPv4/IPv6 connections blocked |
+| Installed CLI | Research demo completed from the installed wheel |
+| Dependency consistency | Passed for the clean provider environment |
+| Advisory check | 16 pinned runtime/provider dependencies; no known advisories returned |
+| Local Markdown links | All resolved |
+| Text/reference/package audit | Passed; complete reachable blobs and distribution members scanned |
+| Live model endpoint | Not run; requires explicit cost authority and host credentials |
+| Remote CI | Workflow prepared; not run remotely |
+| GitHub/PyPI publication | Not performed |
 
-Tests exercise denial before dispatch, invalid arguments, approvals across restart,
-expiry, changed authority, persisted outcomes, unknown side effects, reconciliation,
-cancellation, time/token/iteration/tool limits, context grouping and event cursors.
-Provider, build/install, dependency and final release gates remain pending.
+Commands executed:
+
+```sh
+make check
+make build
+python evaluation/benchmark.py --output evaluation/results/overhead.json
+pip-audit -r requirements-runtime.lock --no-deps --disable-pip --format json
+python evaluation/installed_smoke.py
+```
+
+The installed smoke was invoked using each clean environment's interpreter.
+It asserts import from site-packages and prevents IP network connections. Package
+members were compared byte-for-byte with current Python source. The hash-locked
+requirements define the advisory scan's exact scope. No comprehensive transitive
+manual security review or external penetration test is claimed.
+
+The suite covers unit, integration, provider-contract, CLI/E2E, security,
+architecture and real crash behavior. Its high coverage does not replace the
+listed behavioral oracles, nor prove model intelligence or production security.
+Raw provider fixture failures are intentionally deterministic; no paid endpoint
+is contacted by normal tests.
