@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlsplit
@@ -32,7 +33,7 @@ class Transport:
         self.client = client
         self.response_bytes = response_bytes
         self.timeout = timeout
-        if response_bytes < 128 or timeout <= 0:
+        if response_bytes < 128 or not math.isfinite(timeout) or timeout <= 0:
             raise ValueError("invalid transport bounds")
 
     async def post(
@@ -48,6 +49,7 @@ class Transport:
                 headers=headers,
                 json=payload,
                 timeout=self.timeout,
+                follow_redirects=False,
             ) as response:
                 status = response.status_code
                 if status in {401, 403}:
@@ -60,17 +62,17 @@ class Transport:
                     raise CoreError("provider_response")
                 buffer = bytearray()
                 async for chunk in response.aiter_bytes():
-                    buffer.extend(chunk)
-                    if len(buffer) > self.response_bytes:
+                    if len(buffer) + len(chunk) > self.response_bytes:
                         raise CoreError("provider_response")
-                decoded = json.loads(buffer)
+                    buffer.extend(chunk)
+                decoded = json.loads(buffer, object_pairs_hook=unique_object)
                 if not isinstance(decoded, dict):
                     raise CoreError("provider_response")
                 canonical(decoded)
                 return decoded
         except httpx.HTTPError as exc:
             raise CoreError("provider_transport", retryable=True) from exc
-        except (UnicodeError, ValueError) as exc:
+        except (UnicodeError, ValueError, RecursionError) as exc:
             raise CoreError("provider_response") from exc
         finally:
             if self.client is None:
@@ -81,19 +83,20 @@ def parse_arguments(value: Any) -> dict[str, Json]:
     if not isinstance(value, str):
         raise CoreError("provider_response")
 
-    def unique(items: list[tuple[str, Json]]) -> dict[str, Json]:
-        result: dict[str, Json] = {}
-        for key, item in items:
-            if key in result:
-                raise ValueError("duplicate argument key")
-            result[key] = item
-        return result
-
     try:
-        parsed = json.loads(value, object_pairs_hook=unique)
+        parsed = json.loads(value, object_pairs_hook=unique_object)
         canonical(parsed)
         if not isinstance(parsed, dict):
             raise ValueError("arguments must be object")
         return parsed
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, RecursionError) as exc:
         raise CoreError("provider_response") from exc
+
+
+def unique_object(items: list[tuple[str, Json]]) -> dict[str, Json]:
+    result: dict[str, Json] = {}
+    for key, item in items:
+        if key in result:
+            raise ValueError("duplicate argument key")
+        result[key] = item
+    return result

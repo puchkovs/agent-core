@@ -283,8 +283,9 @@ class Runtime:
         try:
             self.store.save(run, "tool.dispatched", operation)
         except CoreError as exc:
-            if exc.code == "cancelled":
-                return self._finish(self.store.load(run.id), Status.CANCELLED, "cancelled")
+            if exc.code in {"cancelled", "deadline", "approval_expired"}:
+                status = Status.CANCELLED if exc.code == "cancelled" else Status.BUDGET
+                return self._finish(self.store.load(run.id), status, exc.code)
             raise
         started = time.monotonic()
         code: str | None = None

@@ -350,3 +350,61 @@ async def test_invalid_call_batch_also_checks_cancellation_between_calls(store, 
     result = await runtime.run("malformed batch")
     assert result.status == Status.CANCELLED
     assert len(store.operations(result.id)) == 1
+
+
+@pytest.mark.parametrize("boundary", ["model.started", "tool.dispatched"])
+async def test_deadline_rechecked_in_admission_transaction(store, monkeypatch, boundary):
+    def read() -> str:
+        pytest.fail("expired dispatch executed")
+
+    runtime = make(store, [calls(("read", {}))], [Tool.from_callable(read)])
+    original = store.save
+
+    def race(run, kind, operation=None, data=None):
+        if kind == boundary:
+            run = run.model_copy(update={"deadline": 0})
+        return original(run, kind, operation, data)
+
+    monkeypatch.setattr(store, "save", race)
+    run = await runtime.run("work")
+    assert run.reason == "deadline"
+    assert run.tool_count == 0
+    assert not any(event.kind == boundary for event in store.events(run.id))
+
+
+async def test_cancel_at_model_admission_preserves_known_usage(store, monkeypatch):
+    runtime = make(store, [Response(text="unreachable")])
+    original = store.save
+
+    def race(run, kind, operation=None, data=None):
+        if kind == "model.started":
+            store.cancel(run.id)
+        return original(run, kind, operation, data)
+
+    monkeypatch.setattr(store, "save", race)
+    run = await runtime.run("work")
+    assert run.status == Status.CANCELLED
+    assert run.usage.total == 0
+    assert runtime.model.requests == []
+
+
+async def test_approval_expiry_rechecked_in_dispatch_transaction(store, monkeypatch):
+    def write() -> str:
+        pytest.fail("expired approval executed")
+
+    runtime = make(store, [calls(("write", {}))], [Tool.from_callable(write, effect=Effect.WRITE)])
+    run = await runtime.run("write")
+    operation = store.operations(run.id)[0]
+    runtime.approve(run.id, operation.id, operation.binding, actor="host")
+    original = store.save
+
+    def race(run, kind, operation=None, data=None):
+        if kind == "tool.dispatched":
+            operation = operation.model_copy(update={"expires_at": 0})
+        return original(run, kind, operation, data)
+
+    monkeypatch.setattr(store, "save", race)
+    result = await runtime.resume(run.id)
+    assert result.reason == "approval_expired"
+    assert result.tool_count == 0
+    assert store.operations(run.id)[0].status == "prepared"

@@ -294,3 +294,28 @@ def test_anthropic_text_block_validation(content):
         model.decode(
             {"role": "assistant", "type": "message", "stop_reason": "end_turn", "content": content}
         )
+
+
+@pytest.mark.parametrize("timeout", [float("nan"), float("inf"), 0])
+def test_transport_timeout_is_finite(timeout):
+    with pytest.raises(ValueError):
+        Transport(timeout=timeout)
+
+
+async def test_transport_rejects_duplicate_json_fields_and_redirects():
+    seen = []
+
+    def handler(req):
+        seen.append(str(req.url))
+        if req.url.path == "/duplicate":
+            return httpx.Response(200, content=b'{"usage":1,"usage":2}')
+        return httpx.Response(307, headers={"location": "https://other.example/"})
+
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler),
+        follow_redirects=True,
+    ) as client:
+        for path in ["duplicate", "redirect"]:
+            with pytest.raises(CoreError, match="provider_response"):
+                await Transport(client=client).post("https://fixture.example/" + path, {}, {})
+    assert len(seen) == 2

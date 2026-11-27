@@ -24,8 +24,8 @@ The following supersedes the earlier candidate deferrals for the target release.
 
 | Phase | Status | Acceptance |
 |---|---|---|
-| 9 Engineering audit | In progress | Review all boundaries; regression fixes and full checks |
-| 10 Providers | Pending | Official contract review, deterministic fixtures, opt-in live matrix |
+| 9 Engineering audit | Complete for current architecture | Review all boundaries; regression fixes and full checks |
+| 10 Providers | In progress | Official contract review, deterministic fixtures, opt-in live matrix |
 | 11 Native streaming | Pending | Bounded deltas and complete validated assembly; interruption tests |
 | 12 Optional MCP | Pending | Versioned protocol/transport scope; local server conformance through Tool Engine |
 | 13 SDK/CLI | Pending | Complete continuation, cleanup and structured-error flows |

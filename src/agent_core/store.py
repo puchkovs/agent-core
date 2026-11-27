@@ -131,8 +131,14 @@ class Store:
                 previous.status, set()
             ):
                 raise CoreError("invalid_transition")
-            if kind == "tool.dispatched" and self.cancelled(run.id):
-                raise CoreError("cancelled")
+            if kind in {"tool.dispatched", "model.started"}:
+                if self.cancelled(run.id):
+                    raise CoreError("cancelled")
+                if time.time() >= run.deadline:
+                    raise CoreError("deadline")
+            if kind == "tool.dispatched" and operation is not None:
+                if operation.expires_at is not None and time.time() >= operation.expires_at:
+                    raise CoreError("approval_expired")
             self.connection.execute(
                 "UPDATE runs SET body=? WHERE id=?", (run.model_dump_json(), run.id)
             )
