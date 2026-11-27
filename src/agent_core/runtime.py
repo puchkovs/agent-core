@@ -216,6 +216,10 @@ class Runtime:
         return result
 
     async def _call(self, run: Run, call: Call) -> Run:
+        if self.store.cancelled(run.id):
+            return self._finish(run, Status.CANCELLED, "cancelled")
+        if time.time() >= run.deadline:
+            return self._finish(run, Status.BUDGET, "deadline")
         op_id = digest([run.id, run.turns, run.next_call])
         existing = self.store.operation(op_id)
         try:
@@ -344,6 +348,10 @@ class Runtime:
                         ),
                     )
                     return updated
+            if run.model_inflight:
+                # A previous request may have been charged without a complete usage receipt.
+                run = run.model_copy(update={"model_inflight": False, "usage": Usage()})
+                self.store.save(run, "model.interrupted")
             if run.config_digest != self.config_digest:
                 if run.status == Status.CREATED:
                     run = run.model_copy(update={"status": Status.RUNNING})
@@ -407,6 +415,7 @@ class Runtime:
                         return self._finish(run, Status.BUDGET, "unknown_usage")
                     if run.usage.total >= self.limits.tokens:
                         return self._finish(run, Status.BUDGET, "token_limit")
+                model_attempted = False
                 try:
                     request = project(run, self.registry, self.policy, self.limits)
                     if self.limits.tokens is not None:
@@ -418,7 +427,9 @@ class Runtime:
                                 )
                             }
                         )
+                    run = run.model_copy(update={"model_inflight": True})
                     self.store.save(run, "model.started", data={"turn": run.turns})
+                    model_attempted = True
                     model_started = time.monotonic()
                     response = await self._bounded(
                         self.model.complete(request), run, self.limits.seconds
@@ -434,8 +445,15 @@ class Runtime:
                     if len(response.model_dump_json().encode()) > self.limits.response_bytes:
                         raise CoreError("provider_response")
                 except asyncio.CancelledError:
+                    run = run.model_copy(update={"model_inflight": False, "usage": Usage()})
                     return self._finish(run, Status.CANCELLED, "cancelled")
                 except Exception as exc:
+                    run = run.model_copy(
+                        update={
+                            "model_inflight": False,
+                            "usage": Usage() if model_attempted else run.usage,
+                        }
+                    )
                     code = exc.code if isinstance(exc, CoreError) else "provider_response"
                     status = (
                         Status.CANCELLED
@@ -458,6 +476,7 @@ class Runtime:
                 run = run.model_copy(
                     update={
                         "turns": run.turns + 1,
+                        "model_inflight": False,
                         "usage": usage,
                         "pending": response,
                     }

@@ -19,7 +19,7 @@ create a new run for new authority. There is no implicit reapproval migration.
 
 | Last committed boundary | Restart behavior |
 |---|---|
-| Run created, no model response | Request model using current durable turn |
+| Run created, no model response | Use current durable turn; interrupted requests have unknown usage |
 | Complete model envelope | Process saved response, including a final answer |
 | Prepared operation | Revalidate and obtain/check approval before admission |
 | Dispatched operation, no outcome | Pause as `needs_reconciliation`; do not retry |

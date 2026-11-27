@@ -3,7 +3,7 @@ import json
 import httpx
 import pytest
 
-from agent_core import CoreError, Message, Registry, Request, Runtime, Status
+from agent_core import Call, CoreError, Message, Registry, Request, Runtime, Status
 from agent_core.providers.anthropic import AnthropicModel
 from agent_core.providers.http import Transport, parse_arguments
 from agent_core.providers.openai_chat import OpenAIChatModel
@@ -236,3 +236,61 @@ async def test_provider_final_through_runtime(kind, store):
         )
         run = await Runtime(model, Registry(), store).run("respond")
         assert run.status == Status.COMPLETED and run.output == "done"
+
+
+@pytest.mark.parametrize("mutation", ["choices", "role", "content", "kind"])
+def test_openai_rejects_unsupported_complete_content(mutation):
+    model = OpenAIChatModel("fixture", "secret")
+    payload = openai_reply()
+    if mutation == "choices":
+        payload["choices"] = []
+    elif mutation == "role":
+        payload["choices"][0]["message"]["role"] = "user"
+    elif mutation == "content":
+        payload["choices"][0]["message"]["content"] = [{"type": "image"}]
+    else:
+        payload["choices"][0]["message"]["tool_calls"][0]["type"] = "custom"
+    with pytest.raises(CoreError, match="provider_response"):
+        model.decode(payload)
+
+
+def test_provider_refusal_and_native_assistant_encoding():
+    model = OpenAIChatModel("fixture", "secret")
+    reply = {
+        "choices": [
+            {
+                "message": {"role": "assistant", "content": None, "refusal": "declined"},
+                "finish_reason": "stop",
+            }
+        ]
+    }
+    assert model.decode(reply).finish == "refusal"
+    messages = request().messages + (
+        Message(role="assistant", calls=(Call(id="c", name="lookup", arguments={"x": 1}),)),
+        Message(role="tool", content="1", call_id="c"),
+    )
+    encoded = model.encode(request(messages))
+    assert encoded["messages"][2]["tool_calls"][0]["function"]["arguments"] == '{"x":1}'
+    anthropic = AnthropicModel("fixture", "secret")
+    assert anthropic.encode(request(messages))["messages"][1]["content"][0]["type"] == "tool_use"
+    assert (
+        anthropic.decode(
+            {"role": "assistant", "type": "message", "content": [], "stop_reason": "refusal"}
+        ).finish
+        == "refusal"
+    )
+
+
+@pytest.mark.parametrize("factory", [OpenAIChatModel, AnthropicModel])
+def test_provider_empty_configuration_rejected(factory):
+    with pytest.raises(CoreError, match="provider_configuration"):
+        factory("", "secret")
+
+
+@pytest.mark.parametrize("content", ["not-blocks", [{"type": "text", "text": 3}]])
+def test_anthropic_text_block_validation(content):
+    model = AnthropicModel("fixture", "secret")
+    with pytest.raises(CoreError, match="provider_response"):
+        model.decode(
+            {"role": "assistant", "type": "message", "stop_reason": "end_turn", "content": content}
+        )

@@ -151,6 +151,7 @@ class Run(Record):
     config_digest: str
     deadline: float
     turns: int = 0
+    model_inflight: bool = False
     tool_count: int = 0
     usage: Usage = Usage(input_tokens=0, output_tokens=0)
     groups: tuple[tuple[Message, ...], ...] = ()

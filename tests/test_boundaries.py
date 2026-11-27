@@ -261,6 +261,7 @@ async def test_workspace_symlink_rejected(store, tmp_path):
         ("tool.dispatched", 0, "needs_reconciliation"),
         ("tool.completed", 1, "completed"),
         ("model.completed", 0, "completed"),
+        ("model.started", 0, "completed"),
     ],
 )
 def test_real_process_death_and_restart(tmp_path, boundary, count, status):
@@ -314,3 +315,38 @@ async def test_known_credentials_cannot_enter_prompt_or_model_journal(store):
     run = await runtime.run("work")
     assert run.reason == "secret_in_model_output"
     assert "credential-example" not in store.path.read_bytes().decode(errors="ignore")
+
+
+async def test_failed_model_receipt_never_claims_zero_usage(store):
+    def fail(request):
+        raise CoreError("provider_transport")
+
+    run = await make(store, [fail]).run("work")
+    assert run.usage.total is None and not run.model_inflight
+
+
+async def test_interrupted_model_usage_prevents_budgeted_retry(store):
+    runtime = make(store, [Response(text="must not be requested")], limits=Limits(tokens=50))
+    run_id = runtime.create("work")
+    started = store.load(run_id).model_copy(
+        update={"status": Status.RUNNING, "model_inflight": True}
+    )
+    store.save(started, "model.started")
+    result = await runtime.resume(run_id)
+    assert result.reason == "unknown_usage"
+    assert runtime.model.requests == []
+
+
+async def test_invalid_call_batch_also_checks_cancellation_between_calls(store, monkeypatch):
+    runtime = make(store, [calls(("unknown", {}), ("also_unknown", {}))])
+    original = store.save
+
+    def cancel_after_first(run, kind, operation=None, data=None):
+        original(run, kind, operation, data)
+        if kind == "tool.completed":
+            store.cancel(run.id)
+
+    monkeypatch.setattr(store, "save", cancel_after_first)
+    result = await runtime.run("malformed batch")
+    assert result.status == Status.CANCELLED
+    assert len(store.operations(result.id)) == 1

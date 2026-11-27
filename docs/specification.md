@@ -28,7 +28,8 @@ running -> waiting_approval -> running
 running -> needs_reconciliation -> running
 Completed, failed, cancelled and budget_exceeded are terminal. A recovered running
 run with a dispatched operation becomes needs_reconciliation before any action.
-A run interrupted during model I/O may repeat that model request; no tool is
+A run interrupted during model I/O records unknown usage. Without a token limit
+it may repeat that model request; with a token limit it stops conservatively. No tool is
 repeated by this path. Terminal resume is read-only.
 
 ## Contracts
@@ -44,7 +45,8 @@ Identity binding includes a digest of this declared manifest. Changing Python
 implementation without changing version is a host contract violation.
 
 Schemas use Draft 2020-12. No external or dynamic references are accepted.
-Local references are accepted for generated definitions. Schemas are host-owned;
+Local references are accepted for generated definitions. Schema rebasing, other
+dialects and unresolved local targets are rejected at registration. Schemas are host-owned;
 complexity is bounded by registration size and depth. JSON values reject NaN and
 infinity. Generated Python contracts use Pydantic strict validation. Providers
 may support a smaller schema subset; no universal schema portability is claimed.
@@ -124,8 +126,10 @@ invalid_output, tool_error, uncertain, cancelled, deadline, turn_limit, tool_lim
 token_limit, unknown_usage, context_limit, provider_auth, provider_rate_limit,
 provider_transport, provider_response, refusal, binding_changed and storage_error.
 Provider retries are disabled; rate limits expose retryability metadata for host
-scheduling. Raw exceptions and HTTP bodies are not persisted. Known host secrets
-can be redacted from observations before persistence; callers must not put secrets
+scheduling. Raw exceptions and HTTP bodies are not persisted. A model-in-flight marker is
+committed before the request; missing usage receipts never become zero. Known host secrets
+can be redacted from observations before persistence; known values in prompts
+or model envelopes are rejected. Callers must not put secrets
 in prompts or arguments. SQLite contains task data in plaintext. Credentials live
 in provider objects or environment, not snapshots, schemas or event payloads.
 

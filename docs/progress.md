@@ -12,10 +12,10 @@
 | 7 | Three verified original demos and regression suite; overhead measurement next |
 | 8 | Offline gates passing; build/install, advisory and final audit underway; final release blocked by live gate |
 
-Latest offline gate: 107 tests pass, 96.24% combined statement/branch coverage;
+Latest offline gate: 120 tests pass, 97.53% combined statement/branch coverage;
 critical modules independently exceed 90%. Ruff, strict mypy and three examples
 pass. Real subprocess crashes have been verified at dispatch, outcome and model
-response boundaries. No real provider call, remote CI run or publication occurred.
+response boundaries, including loss of the usage receipt. No real provider call, remote CI run or publication occurred.
 
 Next: finish build/install/advisory checks, record raw overhead measurements,
 complete handoff audit and archive. Then follow continuation.md for live checks.
