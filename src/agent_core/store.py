@@ -17,6 +17,9 @@ class Store:
     def __init__(self, path: str | Path):
         self.path = Path(path).resolve()
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        descriptor = os.open(self.path, os.O_CREAT | os.O_RDWR, 0o600)
+        os.close(descriptor)
+        os.chmod(self.path, 0o600)
         self.connection = sqlite3.connect(str(self.path), timeout=5, isolation_level=None)
         self.connection.execute("PRAGMA foreign_keys=ON")
         self.connection.execute("PRAGMA journal_mode=WAL")

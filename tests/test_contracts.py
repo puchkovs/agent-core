@@ -85,3 +85,30 @@ def test_store_unknown_version_and_transaction_rollback(tmp_path):
             store.read_artifact("unknown")
     finally:
         store.close()
+
+
+@pytest.mark.parametrize(
+    "schema",
+    [
+        {"$ref": "#/$defs/missing"},
+        {"$id": "https://fixture.example/"},
+        {"$schema": "http://json-schema.org/draft-07/schema#"},
+    ],
+)
+def test_schema_dialect_and_reference_targets_checked_at_registration(schema):
+    with pytest.raises(ValueError):
+        check_schema(schema)
+
+
+def test_local_definition_validation():
+    from agent_core.tools import validate
+
+    schema = {
+        "type": "object",
+        "properties": {"x": {"$ref": "#/$defs/number"}},
+        "$defs": {"number": {"type": "integer"}},
+    }
+    check_schema(schema)
+    validate(schema, {"x": 1}, "invalid")
+    with pytest.raises(CoreError, match="invalid"):
+        validate(schema, {"x": "bad"}, "invalid")

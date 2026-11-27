@@ -77,6 +77,8 @@ class Runtime:
     ) -> str:
         if len(prompt.encode()) > self.limits.context_bytes:
             raise CoreError("context_limit")
+        if any(secret in prompt or secret in self.instructions for secret in self.secrets):
+            raise CoreError("secret_in_prompt")
         if output_schema is not None:
             check_schema(output_schema)
         run = Run(
@@ -115,7 +117,8 @@ class Runtime:
 
     def _redact(self, value: str) -> str:
         for secret in self.secrets:
-            value = value.replace(secret, "[REDACTED]")
+            escaped = json.dumps(secret, ensure_ascii=False)[1:-1]
+            value = value.replace(escaped, "[REDACTED]").replace(secret, "[REDACTED]")
         return value
 
     async def _bounded(self, work: Awaitable[T], run: Run, wait_seconds: float) -> T:
@@ -146,7 +149,14 @@ class Runtime:
         with contextlib.suppress(BaseException):
             task.result()
 
-    def _binding(self, run: Run, op_id: str, call: Call, tool: Tool) -> str:
+    def _binding(
+        self,
+        run: Run,
+        op_id: str,
+        call: Call,
+        tool: Tool,
+        expires_at: float | None,
+    ) -> str:
         return digest(
             {
                 "run": run.id,
@@ -155,6 +165,7 @@ class Runtime:
                 "tool": tool.manifest,
                 "policy": self.policy.identity,
                 "constraints": run.config_digest,
+                "expires_at": expires_at,
             }
         )
 
@@ -180,14 +191,20 @@ class Runtime:
         if len(raw) <= self.limits.preview_bytes:
             return text
         key = self.store.artifact(text)
-        return canonical(
-            {
-                "truncated": True,
-                "artifact": key,
-                "bytes": len(raw),
-                "preview": raw[: self.limits.preview_bytes // 2].decode(errors="ignore"),
-            }
-        )
+        envelope: dict[str, Json] = {
+            "truncated": True,
+            "artifact": key,
+            "bytes": len(raw),
+        }
+        # Count serialized bytes, including escaping and UTF-8 metadata overhead.
+        preview_size = min(len(raw), self.limits.preview_bytes // 2)
+        while preview_size > 0:
+            candidate = {**envelope, "preview": raw[:preview_size].decode(errors="ignore")}
+            encoded = canonical(candidate)
+            if len(encoded.encode()) <= self.limits.preview_bytes:
+                return encoded
+            preview_size //= 2
+        return canonical(envelope)
 
     async def _invoke(self, tool: Tool, call: Call) -> Json:
         args = json.loads(canonical(call.arguments))
@@ -217,7 +234,17 @@ class Runtime:
                 effect=Effect.READ,
             )
             return self._outcome(run, rejected, canonical({"error": exc.code}), exc.code)
-        binding = self._binding(run, op_id, call, tool)
+        decision = self.policy.decide(tool)
+        expires_at = (
+            existing.expires_at
+            if existing is not None
+            else (
+                time.time() + self.limits.approval_seconds
+                if decision == Decision.APPROVAL
+                else None
+            )
+        )
+        binding = self._binding(run, op_id, call, tool, expires_at)
         operation = existing or Operation(
             id=op_id,
             run_id=run.id,
@@ -225,20 +252,15 @@ class Runtime:
             binding=binding,
             manifest=tool.manifest,
             effect=tool.effect,
+            expires_at=expires_at,
         )
         if operation.binding != binding:
             return self._finish(run, Status.FAILED, "binding_changed")
-        decision = self.policy.decide(tool)
+        self.store.save(run, "policy.decided", operation, {"decision": decision.value})
         if decision == Decision.DENY:
             return self._finish(run, Status.FAILED, "policy_denied")
         if decision == Decision.APPROVAL:
             if operation.approval is None:
-                if operation.expires_at is None:
-                    operation = operation.model_copy(
-                        update={
-                            "expires_at": time.time() + self.limits.approval_seconds,
-                        }
-                    )
                 paused = run.model_copy(update={"status": Status.WAITING})
                 self.store.save(paused, "approval.requested", operation, {"binding": binding})
                 return paused
@@ -397,10 +419,18 @@ class Runtime:
                             }
                         )
                     self.store.save(run, "model.started", data={"turn": run.turns})
+                    model_started = time.monotonic()
                     response = await self._bounded(
                         self.model.complete(request), run, self.limits.seconds
                     )
                     response = Response.model_validate_json(response.model_dump_json())
+                    serialized = response.model_dump_json()
+                    if any(
+                        secret in serialized
+                        or json.dumps(secret, ensure_ascii=False)[1:-1] in serialized
+                        for secret in self.secrets
+                    ):
+                        raise CoreError("secret_in_model_output")
                     if len(response.model_dump_json().encode()) > self.limits.response_bytes:
                         raise CoreError("provider_response")
                 except asyncio.CancelledError:
@@ -433,7 +463,14 @@ class Runtime:
                     }
                 )
                 # Commit the complete response and usage together, including final answers.
-                self.store.save(run, "model.completed", data={"usage": response.usage.model_dump()})
+                self.store.save(
+                    run,
+                    "model.completed",
+                    data={
+                        "usage": response.usage.model_dump(),
+                        "duration": time.monotonic() - model_started,
+                    },
+                )
 
     def _final_output(self, run: Run, response: Response) -> Run:
         try:

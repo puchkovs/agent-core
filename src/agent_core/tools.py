@@ -23,10 +23,21 @@ def check_schema(schema: dict[str, Json]) -> None:
             raise ValueError("schema too deep")
         if isinstance(value, dict):
             for key, item in value.items():
+                if key in {"$id", "$anchor"}:
+                    raise ValueError("schema rebasing is unsupported")
+                if key == "$schema" and item != "https://json-schema.org/draft/2020-12/schema":
+                    raise ValueError("only Draft 2020-12 is supported")
                 if key in {"$dynamicRef", "$recursiveRef"}:
                     raise ValueError("dynamic references unsupported")
                 if key == "$ref" and (not isinstance(item, str) or not item.startswith("#/$defs/")):
                     raise ValueError("only local definition references supported")
+                if key == "$ref":
+                    target = schema
+                    try:
+                        for part in item[2:].split("/"):
+                            target = target[part.replace("~1", "/").replace("~0", "~")]
+                    except (KeyError, TypeError) as exc:
+                        raise ValueError("unresolved local schema reference") from exc
                 walk(item, depth + 1)
         elif isinstance(value, list):
             for item in value:
