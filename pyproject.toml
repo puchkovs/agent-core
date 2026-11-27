@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agent-core-runtime"
+version = "0.1.0a1"
+description = "A local model-directed runtime with explicit tool authority and durable outcomes"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+authors = [{name = "Sergey Puchkov", email = "puchkov889@gmail.com"}]
+dependencies = ["pydantic>=2.13,<3", "jsonschema>=4.26,<5"]
+classifiers = ["Development Status :: 3 - Alpha", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3.12"]
+
+[project.optional-dependencies]
+providers = ["httpx>=0.28,<0.29"]
+dev = ["pytest>=9,<10", "pytest-asyncio>=1.5,<2", "pytest-cov>=7,<8", "ruff>=0.17,<0.18", "mypy>=2.4,<3", "types-jsonschema>=4.26", "build>=1.6,<2", "pip-audit>=2.10,<3", "httpx>=0.28,<0.29"]
+
+[project.scripts]
+agent-core = "agent_core.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_core"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.coverage.run]
+branch = true
+source = ["agent_core"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src"]
