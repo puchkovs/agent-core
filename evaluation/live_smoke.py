@@ -9,6 +9,7 @@ import asyncio
 import json
 import os
 import tempfile
+from datetime import UTC, datetime
 from pathlib import Path
 
 from agent_core import Policy, Registry, Runtime, Status, Store, Tool
@@ -19,6 +20,10 @@ async def main() -> None:
         raise SystemExit("Live testing disabled; explicit AGENT_CORE_LIVE=1 required.")
     provider = os.environ["AGENT_CORE_PROVIDER"]
     model_id = os.environ["AGENT_CORE_MODEL"]
+    streaming = os.environ.get("AGENT_CORE_STREAMING", "0")
+    if streaming not in {"0", "1"}:
+        raise SystemExit("AGENT_CORE_STREAMING must be 0 or 1.")
+    native_stream = streaming == "1"
     effects = []
 
     def sum_integers(left: int, right: int) -> int:
@@ -30,12 +35,12 @@ async def main() -> None:
         from agent_core.providers.openai_chat import OpenAIChatModel
 
         key = os.environ["OPENAI_API_KEY"]
-        model = OpenAIChatModel(model_id, key)
+        model = OpenAIChatModel(model_id, key, streaming=native_stream)
     elif provider == "anthropic":
         from agent_core.providers.anthropic import AnthropicModel
 
         key = os.environ["ANTHROPIC_API_KEY"]
-        model = AnthropicModel(model_id, key)
+        model = AnthropicModel(model_id, key, streaming=native_stream)
     else:
         raise SystemExit("Only openai or anthropic is supported.")
     tool = Tool.from_callable(sum_integers)
@@ -55,9 +60,13 @@ async def main() -> None:
             assert run.status == Status.COMPLETED, run.reason
             assert effects == [(17, 25)], effects
             assert "42" in str(run.output)
+            assert run.usage.total is not None, "Live usage receipt is required."
             print(
                 json.dumps(
                     {
+                        "verified_at": datetime.now(UTC).isoformat(),
+                        "api_profile": model.identity,
+                        "native_streaming": native_stream,
                         "provider": provider,
                         "model": model_id,
                         "status": run.status,

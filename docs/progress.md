@@ -245,3 +245,7 @@ verification requires host credentials and explicit paid-call authorization.
 No paid call, final version bump, release tag, GitHub Release, PyPI publication or
 public visibility change occurred. All independently achievable phases 11–16
 are completed for the documented scope; Phase 16 release gate remains blocked.
+
+Live verification preparation: live_smoke.py now supports AGENT_CORE_STREAMING=1,
+records API profile/date/mode and requires known usage. Its disabled guard was
+verified locally; no paid endpoint was contacted.

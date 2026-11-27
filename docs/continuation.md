@@ -14,8 +14,8 @@ its conclusion before reporting final CI success. See testing.md for exact evide
 
 The remaining release gate is live OpenAI and Anthropic tool/native-stream
 verification. It requires explicit paid-call authority and host credentials; do
-not run it merely because a key exists. Existing evaluation/live_smoke.py covers
-complete-response tool use; extend the opt-in live procedure to streaming after
+not run it merely because a key exists. Existing evaluation/live_smoke.py supports complete-response tool use and
+native streaming selected by AGENT_CORE_STREAMING=1. Run each mode only after
 authority is supplied. Preserve model/API/date/usage/effect evidence without keys.
 Fix confirmed wire differences with deterministic fixtures; rerun make check,
 builds and clean installs after any change. No final v0.1.0 claim is permitted yet.
