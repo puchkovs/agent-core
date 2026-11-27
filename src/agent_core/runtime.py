@@ -21,9 +21,11 @@ from .contracts import (
     Message,
     Model,
     Operation,
+    Request,
     Response,
     Run,
     Status,
+    StreamingModel,
     Usage,
     canonical,
     digest,
@@ -325,6 +327,29 @@ class Runtime:
             text = canonical({"error": code})
         return self._outcome(run, operation, text, code)
 
+    async def _complete(self, request: Request, run: Run) -> Response:
+        if not isinstance(self.model, StreamingModel) or not self.model.streaming:
+            return await self.model.complete(request)
+        response = None
+        size = 0
+        async with contextlib.aclosing(self.model.stream(request)) as source:
+            async for delta in source:
+                if response is not None:
+                    raise CoreError("provider_response")
+                if delta.response is not None:
+                    response = delta.response
+                    continue
+                size += len(delta.model_dump_json().encode())
+                if size > self.limits.response_bytes:
+                    raise CoreError("provider_response")
+                # A secret may span fragments. Suppress provisional persistence when
+                # host secret filtering is configured; validate the whole envelope below.
+                if not self.secrets:
+                    self.store.save(run, "model.delta", data=delta.model_dump(mode="json"))
+        if response is None:
+            raise CoreError("provider_response")
+        return response
+
     async def resume(self, run_id: str) -> Run:
         with self.store.driver(run_id):
             run = self.store.load(run_id)
@@ -433,7 +458,7 @@ class Runtime:
                     model_attempted = True
                     model_started = time.monotonic()
                     response = await self._bounded(
-                        self.model.complete(request), run, self.limits.seconds
+                        self._complete(request, run), run, self.limits.seconds
                     )
                     response = Response.model_validate_json(response.model_dump_json())
                     serialized = response.model_dump_json()

@@ -4,7 +4,17 @@ import json
 import sys
 
 report = json.load(open(sys.argv[1]))
-critical = {"runtime.py", "store.py", "tools.py", "policy.py", "context.py", "contracts.py"}
+critical = {
+    "runtime.py",
+    "store.py",
+    "tools.py",
+    "policy.py",
+    "context.py",
+    "contracts.py",
+    "streaming.py",
+    "sse.py",
+    "http.py",
+}
 failed = []
 for path, entry in report["files"].items():
     if path.rsplit("/", 1)[-1] in critical:

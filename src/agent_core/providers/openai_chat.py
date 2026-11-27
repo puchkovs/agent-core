@@ -2,15 +2,27 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncGenerator
+
 from pydantic import ValidationError
 
-from agent_core.contracts import Call, CoreError, Json, Request, Response, Usage, canonical
+from agent_core.contracts import (
+    Call,
+    CoreError,
+    Json,
+    ModelDelta,
+    Request,
+    Response,
+    Usage,
+    canonical,
+)
 
 from .http import Capabilities, Transport, parse_arguments, usage_count
+from .streaming import stream
 
 
 class OpenAIChatModel:
-    capabilities = Capabilities(native_output_schema=True)
+    capabilities = Capabilities(native_output_schema=True, token_deltas=True)
 
     def __init__(
         self,
@@ -18,10 +30,12 @@ class OpenAIChatModel:
         api_key: str,
         *,
         transport: Transport | None = None,
+        streaming: bool = False,
         endpoint: str = "https://api.openai.com/v1/chat/completions",
     ):
         if not api_key or not model:
             raise CoreError("provider_configuration")
+        self.streaming = streaming
         self.model = model
         self._key = api_key
         self.endpoint = endpoint
@@ -133,7 +147,18 @@ class OpenAIChatModel:
         ) as exc:
             raise CoreError("provider_response") from exc
 
+    def stream(self, request: Request) -> AsyncGenerator[ModelDelta, None]:
+        return stream(self, request, anthropic=False)
+
     async def complete(self, request: Request) -> Response:
+        if self.streaming:
+            response = None
+            async for delta in self.stream(request):
+                if delta.response is not None:
+                    response = delta.response
+            if response is None:
+                raise CoreError("provider_response")
+            return response
         payload = await self.transport.post(
             self.endpoint,
             {"Authorization": "Bearer " + self._key},

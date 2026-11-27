@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlsplit
@@ -11,6 +12,8 @@ from urllib.parse import urlsplit
 import httpx
 
 from agent_core.contracts import CoreError, Json, canonical
+
+from .sse import Frame, frames
 
 
 @dataclass(frozen=True)
@@ -74,6 +77,40 @@ class Transport:
             raise CoreError("provider_transport", retryable=True) from exc
         except (UnicodeError, ValueError, RecursionError) as exc:
             raise CoreError("provider_response") from exc
+        finally:
+            if self.client is None:
+                await client.aclose()
+
+    async def stream(
+        self, url: str, headers: dict[str, str], payload: dict[str, Json]
+    ) -> AsyncIterator[Frame]:
+        if urlsplit(url).scheme != "https":
+            raise CoreError("provider_configuration")
+        client = self.client or httpx.AsyncClient(follow_redirects=False, trust_env=False)
+        try:
+            async with client.stream(
+                "POST",
+                url,
+                headers=headers,
+                json=payload,
+                timeout=self.timeout,
+                follow_redirects=False,
+            ) as response:
+                status = response.status_code
+                if status in {401, 403}:
+                    raise CoreError("provider_auth")
+                if status == 429:
+                    raise CoreError("provider_rate_limit", retryable=True)
+                if status >= 500:
+                    raise CoreError("provider_unavailable", retryable=True)
+                if status < 200 or status >= 300:
+                    raise CoreError("provider_response")
+                if response.headers.get("content-type", "").split(";")[0] != "text/event-stream":
+                    raise CoreError("provider_response")
+                async for frame in frames(response.aiter_bytes(), byte_limit=self.response_bytes):
+                    yield frame
+        except httpx.HTTPError as exc:
+            raise CoreError("provider_transport", retryable=True) from exc
         finally:
             if self.client is None:
                 await client.aclose()

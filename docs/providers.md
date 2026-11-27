@@ -3,8 +3,8 @@
 | Adapter | Implemented contract | Verification | Not supported |
 |---|---|---|---|
 | `ScriptedModel` | Complete envelopes indexed by durable turn | Offline unit/E2E | Model intelligence claims |
-| `OpenAIChatModel` | HTTPS Chat Completions, text, client function calls, usage, JSON schema request | Mock HTTP round trips and runtime fixtures | Responses API, audio, images, server tools, token deltas |
-| `AnthropicModel` | HTTPS Messages, explicit `2023-06-01` header, text/client-tool blocks, usage, opaque thinking replay | Mock HTTP round trips and runtime fixtures | Newer version profiles, server tools, token deltas |
+| `OpenAIChatModel` | HTTPS Chat Completions, text, client function calls, usage, JSON schema request | Mock HTTP round trips and runtime fixtures | Responses API, audio, images, server tools |
+| `AnthropicModel` | HTTPS Messages, explicit `2023-06-01` header, text/client-tool blocks, usage, opaque thinking replay | Mock HTTP round trips and runtime fixtures | Newer version profiles, server tools |
 
 **No real model endpoint was called for this candidate.** Fixture verification
 proves normalization behavior for the supplied shapes, not live service support.
@@ -77,3 +77,6 @@ validation. No universal schema portability or live compatibility is claimed.
 Live verification remains unrun: paid-call authorization has not been supplied.
 Use the existing opt-in live_smoke.py only after that authority is granted; do not
 put API keys in evidence files. Native token deltas remain Phase 11 work.
+
+Native streaming is now available with streaming=True; see [streaming](streaming.md)
+for exact fixture-verified scope. Earlier token-delta deferrals describe the historical candidate.

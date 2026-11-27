@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import AsyncGenerator
 from enum import StrEnum
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol, runtime_checkable
 from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -193,3 +194,20 @@ class CoreError(Exception):
         super().__init__(code)
         self.code = code
         self.retryable = retryable
+
+
+class ModelDelta(Record):
+    """Provisional observation; only response contains a complete envelope."""
+
+    kind: Literal["text", "arguments", "usage", "response"]
+    text: str = ""
+    index: int | None = None
+    data: dict[str, Json] = Field(default_factory=dict)
+    response: Response | None = None
+
+
+@runtime_checkable
+class StreamingModel(Protocol):
+    streaming: bool
+
+    def stream(self, request: Request) -> AsyncGenerator[ModelDelta, None]: ...

@@ -6,13 +6,25 @@ API versions or server tools. Opaque thinking blocks are preserved during replay
 
 from __future__ import annotations
 
-from agent_core.contracts import Call, CoreError, Json, Request, Response, Usage, canonical
+from collections.abc import AsyncGenerator
+
+from agent_core.contracts import (
+    Call,
+    CoreError,
+    Json,
+    ModelDelta,
+    Request,
+    Response,
+    Usage,
+    canonical,
+)
 
 from .http import Capabilities, Transport, usage_count
+from .streaming import stream
 
 
 class AnthropicModel:
-    capabilities = Capabilities()
+    capabilities = Capabilities(token_deltas=True)
 
     def __init__(
         self,
@@ -20,10 +32,12 @@ class AnthropicModel:
         api_key: str,
         *,
         transport: Transport | None = None,
+        streaming: bool = False,
         endpoint: str = "https://api.anthropic.com/v1/messages",
     ):
         if not model or not api_key:
             raise CoreError("provider_configuration")
+        self.streaming = streaming
         self.model = model
         self._key = api_key
         self.endpoint = endpoint
@@ -135,7 +149,18 @@ class AnthropicModel:
         except (AttributeError, KeyError, TypeError, ValueError) as exc:
             raise CoreError("provider_response") from exc
 
+    def stream(self, request: Request) -> AsyncGenerator[ModelDelta, None]:
+        return stream(self, request, anthropic=True)
+
     async def complete(self, request: Request) -> Response:
+        if self.streaming:
+            response = None
+            async for delta in self.stream(request):
+                if delta.response is not None:
+                    response = delta.response
+            if response is None:
+                raise CoreError("provider_response")
+            return response
         payload = await self.transport.post(
             self.endpoint,
             {"x-api-key": self._key, "anthropic-version": "2023-06-01"},
