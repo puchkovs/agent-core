@@ -58,3 +58,19 @@ Current implementation CI: run 45922819563; inspect its final conclusion using
 These checks do not complete the extended phases 9–16 or establish native
 streaming/MCP compatibility. Live verification and the full release gate remain
 unpassed. Continue Phase 9 from docs/continuation.md.
+
+## Phase 10 provider improvements — 2026-11-27
+
+Completed the offline provider review and fixes: strict token counters, Anthropic
+cache-aware input accounting, selected provider identity/raw usage metadata,
+malformed-object classification, refusal validation and rejection of falsy
+nontext OpenAI content. Existing replay/tool-call/structured-output fixtures
+remain passing. Endpoint/model identifiers remain host-configurable.
+Official reference links and exact profile limitations are in docs/providers.md.
+
+Full make check: 158 tests pass, 97.64% combined coverage, all critical components
+above 90%, Ruff/format, strict mypy and three demos. Phase 9 CI run 45923353317
+passed. No dependency versions changed or paid endpoint calls occurred.
+Phase 10 offline work is complete; live interoperability remains a release blocker
+because paid-call authority is absent. Next independently achievable task is
+Phase 11 native provider streaming with bounded parsing and complete assembly.

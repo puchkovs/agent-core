@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from agent_core.contracts import Call, CoreError, Json, Request, Response, Usage, canonical
 
-from .http import Capabilities, Transport
+from .http import Capabilities, Transport, usage_count
 
 
 class AnthropicModel:
@@ -107,17 +107,32 @@ class AnthropicModel:
                     calls.append(Call(id=block["id"], name=block["name"], arguments=block["input"]))
                 elif kind not in {"thinking", "redacted_thinking"}:
                     raise ValueError("unsupported block")
-            usage = payload.get("usage") or {}
+            usage = payload.get("usage")
+            usage = {} if usage is None else usage
+            if not isinstance(usage, dict):
+                raise ValueError("invalid usage")
+            input_tokens = usage_count(usage.get("input_tokens"))
+            for field in ("cache_creation_input_tokens", "cache_read_input_tokens"):
+                cached = usage_count(usage.get(field, 0))
+                input_tokens = (
+                    None if input_tokens is None or cached is None else input_tokens + cached
+                )
             return Response(
                 text="\n".join(text),
                 calls=tuple(calls),
                 finish={"end_turn": "stop", "tool_use": "tool_calls", "refusal": "refusal"}[stop],
                 usage=Usage(
-                    input_tokens=usage.get("input_tokens"), output_tokens=usage.get("output_tokens")
+                    input_tokens=input_tokens, output_tokens=usage_count(usage.get("output_tokens"))
                 ),
-                metadata={"adapter": self.identity, "content": blocks},
+                metadata={
+                    "adapter": self.identity,
+                    "content": blocks,
+                    "provider": {
+                        key: payload[key] for key in ("id", "model", "usage") if key in payload
+                    },
+                },
             )
-        except (KeyError, TypeError, ValueError) as exc:
+        except (AttributeError, KeyError, TypeError, ValueError) as exc:
             raise CoreError("provider_response") from exc
 
     async def complete(self, request: Request) -> Response:

@@ -319,3 +319,56 @@ async def test_transport_rejects_duplicate_json_fields_and_redirects():
             with pytest.raises(CoreError, match="provider_response"):
                 await Transport(client=client).post("https://fixture.example/" + path, {}, {})
     assert len(seen) == 2
+
+
+@pytest.mark.parametrize("kind", ["openai", "anthropic"])
+@pytest.mark.parametrize("value", [True, "8", 1.5, -1])
+def test_usage_counters_are_strict_nonnegative_integers(kind, value):
+    model = (OpenAIChatModel if kind == "openai" else AnthropicModel)("fixture", "secret")
+    payload = openai_reply() if kind == "openai" else anthropic_reply()
+    payload["usage"]["prompt_tokens" if kind == "openai" else "input_tokens"] = value
+    with pytest.raises(CoreError, match="provider_response"):
+        model.decode(payload)
+
+
+@pytest.mark.parametrize("kind", ["openai", "anthropic"])
+@pytest.mark.parametrize("value", [[], [1], "bad", False])
+def test_malformed_provider_usage_is_classified(kind, value):
+    model = (OpenAIChatModel if kind == "openai" else AnthropicModel)("fixture", "secret")
+    payload = openai_reply() if kind == "openai" else anthropic_reply()
+    payload["usage"] = value
+    with pytest.raises(CoreError, match="provider_response"):
+        model.decode(payload)
+
+
+def test_anthropic_cache_accounting_and_provider_metadata():
+    payload = anthropic_reply()
+    payload.update(id="response-id", model="fixture-model")
+    payload["usage"].update(cache_creation_input_tokens=5, cache_read_input_tokens=7)
+    response = AnthropicModel("fixture", "secret").decode(payload)
+    assert response.usage.input_tokens == 20
+    assert response.usage.total == 23
+    assert response.metadata["provider"]["id"] == "response-id"
+    payload["usage"]["cache_read_input_tokens"] = None
+    assert AnthropicModel("fixture", "secret").decode(payload).usage.total is None
+
+
+@pytest.mark.parametrize("content", [False, 0, [], {}])
+def test_openai_falsy_nontext_content_rejected(content):
+    payload = openai_reply()
+    payload["choices"][0]["message"]["content"] = content
+    with pytest.raises(CoreError, match="provider_response"):
+        OpenAIChatModel("fixture", "secret").decode(payload)
+
+
+@pytest.mark.parametrize("kind", ["openai", "anthropic"])
+def test_malformed_message_objects_are_classified(kind):
+    if kind == "openai":
+        payload = openai_reply()
+        payload["choices"][0]["message"] = []
+        model = OpenAIChatModel("fixture", "secret")
+    else:
+        payload = []
+        model = AnthropicModel("fixture", "secret")
+    with pytest.raises(CoreError, match="provider_response"):
+        model.decode(payload)

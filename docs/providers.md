@@ -47,3 +47,33 @@ key. It may incur real charges. After explicit cost authority, run it separately
 for each selected model and preserve the model ID, API profile, date and outcome.
 The test requires one arithmetic tool call and checks the returned sum. A single
 successful smoke is not broad task-quality or safety validation.
+
+## Provider contract review — 2026-11-27
+
+Reviewed the [OpenAI Chat reference](https://developers.openai.com/api/reference/resources/chat),
+[Messages reference](https://platform.claude.com/docs/en/api/messages/create) and
+[Anthropic cache accounting](https://platform.claude.com/docs/en/build-with-claude/prompt-caching).
+The current Messages reference defaults to a newer API profile; this adapter
+continues to send its explicit 2023-06-01 header. No newer-profile compatibility
+or model-specific capability is inferred from that reference.
+
+Token counters must be nonnegative integers; strings, booleans and fractions are
+rejected. Anthropic input usage includes uncached, cache-creation and cache-read
+input tokens. Missing accounting stays unknown; cache fields absent from the
+selected legacy profile contribute zero, while explicit null stays unknown.
+OpenAI prompt_tokens already represents its total input count. Raw provider
+usage and selected response identity metadata are preserved separately from
+normalized usage, alongside existing adapter-specific message replay data.
+Malformed response objects produce provider_response; falsy nontext content is
+rejected. Refusal values must be strings or null.
+
+Both adapters retain configurable model IDs and HTTPS endpoints. An injected
+HTTP client remains caller-owned; Agent Core closes clients it creates. Redirects
+and retries stay disabled. Wire responses reject duplicate JSON keys, including
+nested objects. Native structured output remains OpenAI request-level support
+for compatible models; Anthropic uses final-JSON instructions plus host schema
+validation. No universal schema portability or live compatibility is claimed.
+
+Live verification remains unrun: paid-call authorization has not been supplied.
+Use the existing opt-in live_smoke.py only after that authority is granted; do not
+put API keys in evidence files. Native token deltas remain Phase 11 work.

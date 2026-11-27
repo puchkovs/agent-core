@@ -100,3 +100,12 @@ def unique_object(items: list[tuple[str, Json]]) -> dict[str, Json]:
             raise ValueError("duplicate argument key")
         result[key] = item
     return result
+
+
+def usage_count(value: Json) -> int | None:
+    """Keep absent accounting unknown; never coerce provider counters."""
+    if value is None:
+        return None
+    if type(value) is not int or value < 0:
+        raise ValueError("invalid token count")
+    return value

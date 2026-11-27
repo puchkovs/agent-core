@@ -132,3 +132,19 @@ Phase 9 review is complete for the current architecture; new provider, streaming
 and MCP behavior will require their own verification. Next: Phase 10 provider
 shape validation, usage accounting and metadata against official references.
 Live calls remain blocked on explicit paid-call authority.
+
+## Phase 10 provider improvements — 2026-11-27
+
+Completed the offline provider review and fixes: strict token counters, Anthropic
+cache-aware input accounting, selected provider identity/raw usage metadata,
+malformed-object classification, refusal validation and rejection of falsy
+nontext OpenAI content. Existing replay/tool-call/structured-output fixtures
+remain passing. Endpoint/model identifiers remain host-configurable.
+Official reference links and exact profile limitations are in docs/providers.md.
+
+Full make check: 158 tests pass, 97.64% combined coverage, all critical components
+above 90%, Ruff/format, strict mypy and three demos. Phase 9 CI run 45923353317
+passed. No dependency versions changed or paid endpoint calls occurred.
+Phase 10 offline work is complete; live interoperability remains a release blocker
+because paid-call authority is absent. Next independently achievable task is
+Phase 11 native provider streaming with bounded parsing and complete assembly.

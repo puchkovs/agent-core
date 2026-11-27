@@ -1,30 +1,27 @@
 # Continue development
 
-Current working history is on private origin/main; use `git log -1` for the
-latest commit. Preserve all history and remain on the alpha version.
+Private origin/main preserves all original history. Read `git log -1` for current
+commit. Use existing .venv; do not repeat baseline reproduction.
 
 
-## Phase 9 admission and transport audit — 2026-11-27
+## Phase 10 provider improvements — 2026-11-27
 
-Reviewed the existing sequential state machine, tool admission, host policy,
-SQLite dispatch/outcome boundaries, conservative recovery, context groups,
-cancellation, budgets, local ownership, SDK/CLI and packaging. Existing crash,
-authority and recovery regressions remain passing. The review does not establish
-hard process isolation, distributed fencing or arbitrary external exactly-once effects.
+Completed the offline provider review and fixes: strict token counters, Anthropic
+cache-aware input accounting, selected provider identity/raw usage metadata,
+malformed-object classification, refusal validation and rejection of falsy
+nontext OpenAI content. Existing replay/tool-call/structured-output fixtures
+remain passing. Endpoint/model identifiers remain host-configurable.
+Official reference links and exact profile limitations are in docs/providers.md.
 
-Closed transaction-time deadline/approval races and model-admission cancellation:
-checks now occur after acquiring the SQLite write transaction. Failed admission
-rolls back without dispatch, tool-count increments or loss of known model usage.
-Transport rejects duplicate JSON object keys and nonfinite timeouts, prevents
-redirect following even on caller-owned clients, and checks chunk size before
-extending the response buffer. No automatic retries were added.
+Full make check: 158 tests pass, 97.64% combined coverage, all critical components
+above 90%, Ruff/format, strict mypy and three demos. Phase 9 CI run 45923353317
+passed. No dependency versions changed or paid endpoint calls occurred.
+Phase 10 offline work is complete; live interoperability remains a release blocker
+because paid-call authority is absent. Next independently achievable task is
+Phase 11 native provider streaming with bounded parsing and complete assembly.
 
-`make check PYTHON=.venv/bin/python` passed: 135 tests, 97.72% combined coverage,
-all critical components above 90%, Ruff lint/format, strict mypy and three demos.
-Phase 9 review is complete for the current architecture; new provider, streaming
-and MCP behavior will require their own verification. Next: Phase 10 provider
-shape validation, usage accounting and metadata against official references.
-Live calls remain blocked on explicit paid-call authority.
-
-Use the existing .venv and hash-locked dependencies. Do not repeat the restored
-repository audit or baseline reproduction. Next phases remain 10–16 in roadmap.md.
+Next: implement Phase 11. Preserve the existing lifecycle event stream. Provider
+deltas must not authorize tool execution; only complete validated responses can
+be checkpointed for dispatch. Cover fragments, multiple calls, missing terminal
+events, cancellation, timeouts, backpressure and malformed events. Then phases
+12–16 remain. Keep version alpha, origin private and no final publication.

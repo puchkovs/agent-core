@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from agent_core.contracts import Call, CoreError, Json, Request, Response, Usage, canonical
 
-from .http import Capabilities, Transport, parse_arguments
+from .http import Capabilities, Transport, parse_arguments, usage_count
 
 
 class OpenAIChatModel:
@@ -80,12 +80,16 @@ class OpenAIChatModel:
             # Unknown message fields may carry replay semantics we do not implement.
             if set(message) - {"role", "content", "tool_calls", "refusal", "annotations"}:
                 raise ValueError("unsupported message content")
-            text = message.get("content") or ""
+            text = message.get("content")
+            text = "" if text is None else text
             if not isinstance(text, str):
                 raise ValueError("text-only adapter")
             finish = choice["finish_reason"]
             if finish not in {"stop", "tool_calls"}:
                 raise ValueError("incomplete response")
+            refusal = message.get("refusal")
+            if refusal is not None and not isinstance(refusal, str):
+                raise ValueError("invalid refusal")
             normalized = []
             for call in message.get("tool_calls") or []:
                 if call.get("type") != "function":
@@ -97,18 +101,36 @@ class OpenAIChatModel:
                         arguments=parse_arguments(call["function"]["arguments"]),
                     )
                 )
-            usage = payload.get("usage") or {}
+            usage = payload.get("usage")
+            usage = {} if usage is None else usage
+            if not isinstance(usage, dict):
+                raise ValueError("invalid usage")
             return Response(
                 text=text,
                 calls=tuple(normalized),
                 finish="refusal" if message.get("refusal") else finish,
                 usage=Usage(
-                    input_tokens=usage.get("prompt_tokens"),
-                    output_tokens=usage.get("completion_tokens"),
+                    input_tokens=usage_count(usage.get("prompt_tokens")),
+                    output_tokens=usage_count(usage.get("completion_tokens")),
                 ),
-                metadata={"adapter": self.identity, "message": message},
+                metadata={
+                    "adapter": self.identity,
+                    "message": message,
+                    "provider": {
+                        key: payload[key]
+                        for key in ("id", "model", "created", "system_fingerprint", "usage")
+                        if key in payload
+                    },
+                },
             )
-        except (KeyError, IndexError, TypeError, ValueError, ValidationError) as exc:
+        except (
+            AttributeError,
+            KeyError,
+            IndexError,
+            TypeError,
+            ValueError,
+            ValidationError,
+        ) as exc:
             raise CoreError("provider_response") from exc
 
     async def complete(self, request: Request) -> Response:
