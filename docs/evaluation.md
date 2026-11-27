@@ -43,3 +43,19 @@ and compare configurations explicitly before drawing performance conclusions.
 Measured candidate: median 2.0021885 ms, nearest-rank p95 2.312309 ms across
 100 samples. See [raw results](../evaluation/results/overhead.json) and
 [final verification](final-verification.md) for source provenance and caveats.
+
+## Extended candidate evaluation
+
+The expanded deterministic suite includes 58 native-streaming tests and 24 MCP
+checks plus 175 contracts/runtime/recovery/CLI/framing checks: 257 total.
+Streaming oracles require terminal validation before dispatch and unknown usage
+after interruption. MCP checks count actual server effects: no write before
+approval, no invalid/denied invocation and no replay after uncertain failure.
+JSON and SSE HTTP responses are tested against a controlled loopback SDK server.
+
+[Extended verification](../evaluation/results/extended-verification.json) records
+actual environment and coverage. [Current overhead](../evaluation/results/release-overhead.json)
+records 100 samples after five warmups at source commit 52ce5db: median
+37.888701 ms, p95 48.132918 ms. This measures ordinary single-tool runtime
+overhead, not isolated MCP/streaming costs. Host/filesystem differences prevent
+attributing changes against historical runs. No model intelligence score is claimed.

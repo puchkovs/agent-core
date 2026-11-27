@@ -1,0 +1,41 @@
+{
+  "source_commit": "52ce5dbf2f7cded3f127f718b5e4212a0d9a775f",
+  "python": "3.12.3",
+  "sqlite": "3.45.1",
+  "tests_passed": 257,
+  "coverage": {
+    "covered_lines": 1545,
+    "num_statements": 1574,
+    "percent_covered": 97.42173112338858,
+    "percent_covered_display": "97",
+    "missing_lines": 29,
+    "excluded_lines": 7,
+    "percent_statements_covered": 98.15756035578144,
+    "percent_statements_covered_display": "98",
+    "num_branches": 598,
+    "num_partial_branches": 27,
+    "covered_branches": 571,
+    "missing_branches": 27,
+    "percent_branches_covered": 95.48494983277592,
+    "percent_branches_covered_display": "95"
+  },
+  "dependencies": {
+    "mcp": "1.30.0",
+    "httpx": "0.28.1",
+    "pydantic": "2.14.4",
+    "jsonschema": "4.26.0",
+    "pytest": "9.2.0",
+    "ruff": "0.17.6",
+    "mypy": "2.4.1"
+  },
+  "scenarios": {
+    "native_streaming": 58,
+    "mcp": 24,
+    "other_contract_runtime_cli_framing": 175
+  },
+  "live_provider": "not run; paid-call authority absent",
+  "limitations": [
+    "Runtime correctness fixtures do not measure model intelligence.",
+    "Benchmark is scripted end-to-end overhead on a shared host."
+  ]
+}
