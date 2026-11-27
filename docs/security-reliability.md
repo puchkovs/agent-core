@@ -37,6 +37,7 @@ arbitrary external exactly-once guarantee, database encryption or automatic data
 retention. Deadlines cannot kill threads or recall remote effects. See SECURITY.md,
 streaming.md, mcp.md and testing.md for exact boundaries.
 
-Live provider/tool/stream interoperability remains unverified. Paid-call authority
-has not been supplied. Final v0.1.0 must remain blocked until those gates pass and
+OpenAI live tool/stream interoperability remains unverified pending credential
+availability. Two bounded OpenAI scenarios are authorized, six requests combined;
+no automatic retries. Anthropic remains experimental and offline-verified. Final v0.1.0 must remain blocked until those gates pass and
 candidate packages/CI are reverified for any resulting changes.

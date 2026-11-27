@@ -1,0 +1,14 @@
+{
+  "starting_commit": "f1002640f7826f1787115bc9114b19ac8a68c767",
+  "tests_passed": 266,
+  "combined_coverage": 97.42,
+  "paid_openai_authorized": true,
+  "maximum_combined_model_requests": 6,
+  "model_requests_sent": 0,
+  "automatic_retries": 0,
+  "openai_key_available": false,
+  "anthropic_status": "experimental; offline-verified; not live-verified",
+  "release_version": "0.1.0a1",
+  "release_blocker": "OPENAI_API_KEY unavailable to execution process; both OpenAI live scenarios unexecuted",
+  "exact_key_scan": "not possible until the actual key is available; pattern scans passed"
+}

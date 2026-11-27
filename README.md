@@ -152,3 +152,10 @@ contains task data in plaintext. A stopped wait cannot kill a synchronous thread
 
 [MIT](LICENSE). Copyright Sergey Puchkov. Actual library dependencies and their
 roles are documented in [dependencies](docs/dependencies.md).
+
+## Provider release status
+
+OpenAI must pass live non-streaming and native-streaming tool/receipt verification
+before v0.1.0. Anthropic is experimental and offline-verified, not live-verified;
+its implementation and deterministic tests remain available. Users must provide
+their own API credentials. No maintainer API key is included in this project.

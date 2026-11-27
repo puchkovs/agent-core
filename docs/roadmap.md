@@ -32,3 +32,9 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 14 Evaluation | Complete for documented deterministic scope | Expanded scenarios and raw reproducible overhead evidence |
 | 15 Documentation | Complete for documented commands/scope | Verify supported commands and compatibility scope |
 | 16 Final gates | Independent gates passed; live-provider release gate blocked | All local/CI/package/security gates; explicit release blockers |
+
+Current release acceptance supersedes historical dual-provider live gates:
+OpenAI complete-response and native-stream tool/receipt checks are mandatory;
+Anthropic remains experimental, offline-verified and optional for release.
+Paid OpenAI scope is authorized (six requests combined), currently blocked on
+credential availability in the execution environment.

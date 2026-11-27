@@ -309,3 +309,29 @@ Remaining: explicit paid-call authorization, authorized provider keys/model IDs,
 four successful live checks, fix any wire differences with regressions, then refresh
 relevant gates and final package/CI evidence before considering final versioning.
 Publication/visibility changes require separate authorization.
+
+## OpenAI-only release acceptance — 2026-11-27
+
+Revised acceptance per host direction: OpenAI non-streaming and native-streaming
+live tool/receipt verification are mandatory; Anthropic is experimental and
+offline-verified, not live-verified. Anthropic implementation/tests are preserved.
+Every user supplies their own credentials; none is embedded in distributions.
+Paid authorization covers these two OpenAI scenarios only, six model requests
+combined, with no automatic retry. Zero paid requests have been sent.
+
+Credential presence checks in login and non-login execution shells both report
+OPENAI_API_KEY unset. Requested secure session-environment availability without
+asking for the key in chat. This is credential access, not missing cost authority.
+No live model/usage/result evidence exists yet; v0.1.0 preparation remains blocked.
+Model selection must confirm account availability before consuming generation
+requests; no current model is claimed live-compatible.
+
+Offline gates passed: 266 tests, 97.42% combined coverage, strict mypy, Ruff
+lint/format, three demos, builds, clean core/provider/MCP installs, installed
+SDK/CLI smoke, pip check, documentation checks and git fsck. Fresh pinned advisory
+scan returned no known vulnerabilities. Audited 212 reachable blobs and working
+files; no inappropriate reference/credential-pattern findings. Installation logs
+and distribution members also passed credential-pattern scans. Raw audit inputs
+remain outside the repository. Without the actual key in this process, exact
+literal-key comparison cannot be performed; pattern checks are scoped evidence.
+No history was rewritten, no credentials printed, no paid requests/retries made.

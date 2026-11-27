@@ -4,7 +4,7 @@
 |---|---|---|---|
 | `ScriptedModel` | Complete envelopes indexed by durable turn | Offline unit/E2E | Model intelligence claims |
 | `OpenAIChatModel` | HTTPS Chat Completions, text, client function calls, usage, JSON schema request | Mock HTTP round trips and runtime fixtures | Responses API, audio, images, server tools |
-| `AnthropicModel` | HTTPS Messages, explicit `2023-06-01` header, text/client-tool blocks, usage, opaque thinking replay | Mock HTTP round trips and runtime fixtures | Newer version profiles, server tools |
+| `AnthropicModel` (experimental) | HTTPS Messages, explicit `2023-06-01` header, text/client-tool blocks, usage, opaque thinking replay | Offline fixtures only; not live-verified | Newer version profiles, server tools |
 
 **No real model endpoint was called for this candidate.** Fixture verification
 proves normalization behavior for the supplied shapes, not live service support.
@@ -74,7 +74,9 @@ nested objects. Native structured output remains OpenAI request-level support
 for compatible models; Anthropic uses final-JSON instructions plus host schema
 validation. No universal schema portability or live compatibility is claimed.
 
-Live verification remains unrun: paid-call authorization has not been supplied.
+OpenAI live verification remains unrun: bounded paid authorization exists, but
+OPENAI_API_KEY is not inherited by the execution environment. Anthropic remains
+experimental and offline-verified.
 Use the existing opt-in live_smoke.py only after that authority is granted; do not
 put API keys in evidence files. Native token streaming is fixture-verified; see streaming.md.
 
@@ -83,4 +85,14 @@ for exact fixture-verified scope. Earlier token-delta deferrals describe the his
 
 The final live gate now verifies the exact sum and an unpredictable receipt from
 the tool observation, with known usage. See [secure live commands and release
-checklist](live-verification.md) for all four modes and configured request limits.
+checklist](live-verification.md) for the two mandatory OpenAI modes and configured request limits.
+
+## Revised v0.1.0 acceptance
+
+OpenAI non-streaming and native-streaming tool/receipt verification are mandatory.
+Anthropic remains experimental and offline-verified; its adapter and all offline
+tests are preserved. Anthropic live verification is not a v0.1.0 release gate.
+No OpenAI model is live-verified until successful evidence is recorded. Each user
+must supply their own API credentials through the host environment; the project
+never ships maintainer credentials. Existing historical four-mode criteria are
+superseded by this release policy.
