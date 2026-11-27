@@ -15,7 +15,8 @@ classifiers = ["Development Status :: 3 - Alpha", "Operating System :: POSIX :: 
 
 [project.optional-dependencies]
 providers = ["httpx>=0.28,<0.29"]
-dev = ["pytest>=9,<10", "pytest-asyncio>=1.5,<2", "pytest-cov>=7,<8", "ruff>=0.17,<0.18", "mypy>=2.4,<3", "types-jsonschema>=4.26", "build>=1.6,<2", "pip-audit>=2.10,<3", "httpx>=0.28,<0.29"]
+mcp = ["mcp==1.30.0"]
+dev = ["mcp==1.30.0", "pytest>=9,<10", "pytest-asyncio>=1.5,<2", "pytest-cov>=7,<8", "ruff>=0.17,<0.18", "mypy>=2.4,<3", "types-jsonschema>=4.26", "build>=1.6,<2", "pip-audit>=2.10,<3", "httpx>=0.28,<0.29"]
 
 [project.scripts]
 agent-core = "agent_core.cli:main"

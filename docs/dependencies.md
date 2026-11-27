@@ -20,3 +20,7 @@ providers for advisory checks. Regenerate intentionally and rerun contract tests
 when changing dependencies. Development tools include pytest, coverage, Ruff,
 mypy, build and pip-audit. No installed library is a claim that every transitive
 component has received a manual source or legal audit.
+
+Optional MCP uses the official mcp Python SDK 1.30.0. Its HTTP/session, validation
+and cryptographic dependencies retain their installed distribution notices; none
+are vendored. requirements-mcp.lock records the exact optional runtime scope.

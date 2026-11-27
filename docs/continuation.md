@@ -1,24 +1,29 @@
 # Continue development
 
-Use existing private origin/main and .venv. Preserve all history and alpha version.
+Continue the existing private main history; use `git log -1` for current commit.
+Use .venv and hash-locked requirements; preserve alpha version and original history.
 
 
-## Phase 11 native streaming — 2026-11-27
+## Phase 12 optional MCP — 2026-11-27
 
-Implemented bounded HTTP SSE streaming, OpenAI and Anthropic assembly, typed public
-ModelDelta SDK events, opt-in streaming=True complete(), and Runtime integration
-inside model-inflight/complete-response checkpoints. Durable lifecycle cursors
-remain intact; model.delta is provisional. Complete validated terminal envelopes
-alone authorize admission. Tested fragmented/multiple calls, usage, thinking
-replay, malformed transitions, missing terminals, disconnects, timeouts,
-cancellation, cleanup, bounds, backpressure and split-secret journal suppression.
+Implemented an optional SDK 1.30.0 bridge for protocol 2025-11-25 tools over
+Streamable HTTP. Configuration rejects non-HTTPS except explicit loopback;
+connection/session cleanup uses async contexts. Discovery is atomic, paginated,
+size/count bounded, schema checked and namespaced. Server annotations cannot
+grant authority: every tool is EXTERNAL with an explicit permission and ordinary
+Runtime validation/approval/dispatch/reconciliation. No subprocess launcher added.
 
-Full make check passed: 231 tests, 97.51% combined coverage; assembly 98%, strict
-mypy, Ruff lint/format and all three demos pass. Added stream/transport components
-to the per-component 90% coverage gate. CI action metadata confirms Node.js 24 for
-checkout v5/setup-python v6; updated workflow keeps all existing verification.
-Live-provider verification remains blocked by absent paid-call authority.
-Next: Phase 12 optional MCP protocol/transport implementation and local conformance.
+Controlled local SDK servers verified both JSON and SSE HTTP responses and
+in-memory approval/continuation, denial, invalid arguments and uncertain failure
+without repeated effects. Limits/error cases are deterministic. Existing dependency
+pins were preserved; 13 new optional SDK-related distributions are hash-locked.
+`pip install --require-hashes -r requirements-dev.lock` and `pip check` pass.
 
-Read docs/streaming.md for scope. Phase 12 next, then phases 13–16. Do not repeat
-completed baseline/audit/provider work. No paid calls or final publication authorized.
+Full make check: 255 passing tests, 97.41% combined coverage; MCP 96%, streaming
+98%, strict mypy, Ruff lint/format and three demos pass. MCP is included in the
+critical 90% component gate. Exact scope and resource-limit caveats: docs/mcp.md.
+Native-streaming CI run 45930099019 passed with Node.js 24 actions.
+Next: Phase 13 SDK/CLI cleanup and structured storage errors; phases 14–16 remain.
+
+No paid-provider calls or final publication authorized. Complete phases 13–16;
+rerun final package/install/advisory/documentation/CI gates after changes.

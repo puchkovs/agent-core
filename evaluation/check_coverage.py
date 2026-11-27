@@ -14,6 +14,7 @@ critical = {
     "streaming.py",
     "sse.py",
     "http.py",
+    "mcp.py",
 }
 failed = []
 for path, entry in report["files"].items():

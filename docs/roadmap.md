@@ -27,8 +27,8 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 9 Engineering audit | Complete for current architecture | Review all boundaries; regression fixes and full checks |
 | 10 Providers | Offline complete; live gate blocked | Official contract review, deterministic fixtures, opt-in live matrix |
 | 11 Native streaming | Offline complete; live gate blocked | Bounded deltas and complete validated assembly; interruption tests |
-| 12 Optional MCP | Next | Versioned protocol/transport scope; local server conformance through Tool Engine |
-| 13 SDK/CLI | Pending | Complete continuation, cleanup and structured-error flows |
+| 12 Optional MCP | Complete for documented HTTP/SDK scope | Versioned protocol/transport scope; local server conformance through Tool Engine |
+| 13 SDK/CLI | Next | Complete continuation, cleanup and structured-error flows |
 | 14 Evaluation | Pending | Expanded scenarios and raw reproducible overhead evidence |
 | 15 Documentation | Pending | Verify supported commands and compatibility scope |
 | 16 Final gates | Pending | All local/CI/package/security gates; explicit release blockers |
