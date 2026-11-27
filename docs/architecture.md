@@ -18,3 +18,8 @@ The host registers capabilities; a model cannot add capabilities by naming them.
 Each batch is saved before its first call, and each saved outcome advances the
 batch cursor. Recovery can distinguish undispatched calls from ambiguous I/O.
 See [specification](specification.md) for the transaction and state contract.
+
+Native HTTP streams are assembled at the model port; provisional deltas may be
+journaled for lifecycle readers, while admission accepts complete envelopes only.
+The optional MCP bridge registers ordinary external Tools, sharing the same
+validation, policy, bound approval, dispatch and outcome paths as native tools.

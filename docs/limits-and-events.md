@@ -32,8 +32,10 @@ completion events record durations and reported usage.
 `stream` uses bounded pages from SQLite, without a subscriber callback on the
 execution path or an in-memory unbounded queue. Slow consumers lag on disk;
 closing the stream requests cancellation and joins the driver. Events can be
-read again by cursor. There are no token deltas, network event acknowledgments,
-automatic retention or guaranteed delivery to a disconnected consumer.
+read again by cursor. Opt-in native streaming adds provisional model.delta events;
+only complete validated envelopes can authorize tool admission. There are no
+network event acknowledgments, automatic retention or guaranteed delivery to a
+disconnected consumer. See [native streaming](streaming.md).
 
 Snapshots, events, artifacts and WAL backups persist until host removal. Keep
 active databases outside the checkout. Back up SQLite consistently using its

@@ -16,6 +16,8 @@ privileges; this package does not provide an operating-system sandbox.
 - Persistent sessions, checkpoints, event cursors and explicit uncertain outcomes.
 - Iteration, tool, elapsed time, reported token and serialized payload limits.
 - Structured final-output validation and bounded tool previews with artifacts.
+- Native text/tool/usage streaming with complete validated response assembly.
+- Optional MCP tools through namespaced permissions and bound approvals.
 - A Python SDK, local CLI and three offline demonstrations.
 
 The runtime contains no task-specific tool sequence. The selected model proposes
@@ -130,6 +132,8 @@ from pending live checks. See [roadmap](docs/roadmap.md) for scope and
 - [Permissions, approval and security](SECURITY.md)
 - [Sessions and recovery](docs/recovery.md)
 - [Providers and supported profiles](docs/providers.md)
+- [Native streaming](docs/streaming.md)
+- [Optional MCP tools](docs/mcp.md)
 - [Limits, context, events and retention](docs/limits-and-events.md)
 - [Restoration and next steps](docs/continuation.md)
 - [Contributing](CONTRIBUTING.md), [changelog](CHANGELOG.md)
@@ -137,8 +141,9 @@ from pending live checks. See [roadmap](docs/roadmap.md) for scope and
 ## Current limits
 
 Local single-agent execution, sequential tools, trusted in-process Python
-functions and Linux local-file ownership. No distributed workers, MCP adapter,
-GUI, browser, shell, automatic semantic memory or model token streaming. Context
+functions and Linux local-file ownership. No distributed workers,
+GUI, browser, shell or automatic semantic memory. MCP scope is SDK 1.30.0,
+protocol 2025-11-25 tools over Streamable HTTP; no stdio process launcher. Context
 limits are serialized bytes, not model-specific tokenizer guarantees. Session
 membership does not imply shared conversation or inherited permissions. SQLite
 contains task data in plaintext. A stopped wait cannot kill a synchronous thread.

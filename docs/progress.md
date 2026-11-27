@@ -1,5 +1,10 @@
 # Progress
 
+Current extended candidate: 257 passing tests, 97.42% combined coverage. Native
+streaming and optional MCP are implemented for their documented offline scopes.
+The sections below retain historical verification milestones; they are not all
+statements about the current implementation. Live-provider verification is pending.
+
 | Phase | Actual state |
 |---|---|
 | 0 | Complete: original specification, architecture, ADRs and roadmap |
@@ -202,3 +207,14 @@ scripted runtime overhead, not intelligence or isolated transport costs.
 Updated package builds passed with hatchling 1.33.0. Next: Phase 15 current-doc
 reconciliation, then Phase 16 clean-install/package/security/CI checks. Live
 provider verification remains blocked on paid-call authority.
+
+## Phase 15 documentation — 2026-11-27
+
+Reconciled README, specification, architecture, security, providers and limits
+with current native streaming and MCP scope. Preserved historical ADR/evaluation
+evidence with explicit supersession notices. Local Markdown file links resolve;
+all Python doc blocks parse; README quick start executed successfully (result 42).
+CLI --help runs. Existing documented offline demos and lifecycle commands remain
+covered by the passing 257-test suite. Live/placeholder endpoint examples are
+configuration illustrations, not claimed executed service verification.
+Next: Phase 16 final gates, clean installations and candidate archive audits.

@@ -76,7 +76,7 @@ validation. No universal schema portability or live compatibility is claimed.
 
 Live verification remains unrun: paid-call authorization has not been supplied.
 Use the existing opt-in live_smoke.py only after that authority is granted; do not
-put API keys in evidence files. Native token deltas remain Phase 11 work.
+put API keys in evidence files. Native token streaming is fixture-verified; see streaming.md.
 
 Native streaming is now available with streaming=True; see [streaming](streaming.md)
 for exact fixture-verified scope. Earlier token-delta deferrals describe the historical candidate.

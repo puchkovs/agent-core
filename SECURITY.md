@@ -19,7 +19,10 @@ cannot be forcibly stopped; interrupted writes are uncertain until reconciled.
 File examples restrict operations to a Markdown basename and reject symlinks.
 They assume a host-controlled directory without concurrent hostile mutation.
 They are not a defense against all filesystem races. No general network, shell,
-plugin auto-import, server-provided tools or credential-discovery tool is included.
+plugin auto-import or credential-discovery tool is included. Optional MCP tools
+require explicit connection/registration, namespaced permissions and approval;
+server claims never grant those permissions. MCP uses the SDK transport and its
+resource behavior; post-decode size limits are not hard memory isolation.
 
 Provider keys stay in host objects/environment. Raw HTTP error bodies and tool
 exceptions are not recorded. `Runtime(secrets=(... ,))` redacts known strings from

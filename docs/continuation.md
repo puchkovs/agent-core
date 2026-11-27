@@ -1,19 +1,18 @@
 # Continue development
 
-Existing private origin/main; preserve history and alpha version.
+Existing private origin/main; preserve alpha version/history.
 
 
-## Phase 14 evaluation — 2026-11-27
+## Phase 15 documentation — 2026-11-27
 
-Preserved original demos and expanded deterministic evaluation to 257 tests,
-including 58 native-streaming and 24 MCP checks. Raw environment/coverage scope
-is in extended-verification.json. Measured 100 samples after five warmups at
-source commit 52ce5db: median 37.888701 ms, p95 48.132918 ms; raw samples,
-configuration and fingerprint are in release-overhead.json. This measures
-scripted runtime overhead, not intelligence or isolated transport costs.
-Updated package builds passed with hatchling 1.33.0. Next: Phase 15 current-doc
-reconciliation, then Phase 16 clean-install/package/security/CI checks. Live
-provider verification remains blocked on paid-call authority.
+Reconciled README, specification, architecture, security, providers and limits
+with current native streaming and MCP scope. Preserved historical ADR/evaluation
+evidence with explicit supersession notices. Local Markdown file links resolve;
+all Python doc blocks parse; README quick start executed successfully (result 42).
+CLI --help runs. Existing documented offline demos and lifecycle commands remain
+covered by the passing 257-test suite. Live/placeholder endpoint examples are
+configuration illustrations, not claimed executed service verification.
+Next: Phase 16 final gates, clean installations and candidate archive audits.
 
-Do not repeat phases 9–14. Tests: 257 passing, coverage 97.42%. Inspect latest CI
-and finish current-documentation cleanup, then the final independent gates.
+Do not repeat phases 9–15. Run final independent gates, record exact results
+and remaining paid-call blocker. Version must remain 0.1.0a1 until release gates pass.

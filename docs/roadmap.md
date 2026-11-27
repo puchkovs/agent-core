@@ -30,5 +30,5 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 12 Optional MCP | Complete for documented HTTP/SDK scope | Versioned protocol/transport scope; local server conformance through Tool Engine |
 | 13 SDK/CLI | Complete for documented local SDK/CLI | Complete continuation, cleanup and structured-error flows |
 | 14 Evaluation | Complete for documented deterministic scope | Expanded scenarios and raw reproducible overhead evidence |
-| 15 Documentation | In progress | Verify supported commands and compatibility scope |
-| 16 Final gates | Pending | All local/CI/package/security gates; explicit release blockers |
+| 15 Documentation | Complete for documented commands/scope | Verify supported commands and compatibility scope |
+| 16 Final gates | In progress; live provider gate blocked | All local/CI/package/security gates; explicit release blockers |

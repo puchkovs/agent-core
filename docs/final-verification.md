@@ -1,4 +1,7 @@
-# Candidate verification report
+# Historical candidate verification report
+
+This report describes the original candidate. Current extended-release results
+are recorded in testing.md and release-readiness.md.
 
 Date: 2026-11-27. Version: 0.1.0a1. Outcome: offline candidate passes its executed
 gates; final release remains blocked on live interoperability evidence.

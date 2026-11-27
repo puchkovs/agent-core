@@ -112,12 +112,22 @@ a thread or recall external work. Any interrupted dispatched write is uncertain.
 Read cancellation can terminate the run but may leave trusted code finishing.
 In-process tools are trusted and must cooperate; isolation requires host processes.
 
-Streaming exposes lifecycle events, not provider token deltas. Consumers use a
-cursor with bounded database pages; no unbounded in-memory queue and no callback
-on the execution path. A slow consumer may lag on disk; event retention is manual.
-Closing a stream requests cancellation and joins the driver. A complete terminal
-or paused event is durable. Model adapters only accept complete HTTP responses;
-truncated bodies and non-success stop reasons cannot execute calls.
+Streaming preserves lifecycle events with bounded cursor pages. Opt-in provider
+streaming also journals provisional model.delta records for text, argument and
+usage fragments. Deltas cannot authorize execution. Only a validated complete
+response after provider terminal events is checkpointed for tool admission.
+Missing terminal events and interrupted streams fail with unknown usage and no
+tool dispatch. Closing lifecycle streaming requests cancellation and joins the
+driver. Direct SDK stream consumers own iterator closure. Total wire/delta byte
+limits and existing runtime deadlines apply. Known-secret filtering suppresses
+provisional journal writes until the whole response can be checked.
+
+Optional MCP tools enter the same registry, schema checks, policy, approvals and
+journal. SDK 1.30.0/protocol 2025-11-25 Streamable HTTP is the selected scope;
+server annotations/instructions grant no authority. All discovered tools are
+external effects with namespaced permissions and conservative reconciliation.
+No process launcher, automatic retry or alternate execution engine is introduced.
+See streaming.md and mcp.md for exact limits and verification scope.
 
 ## Errors and credentials
 
