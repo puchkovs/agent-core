@@ -1,30 +1,29 @@
 # Release readiness
 
-**Version 0.1.0a1. Final v0.1.0 preparation is blocked on two Groq live checks.**
+**Version 0.1.0. Release preparation is complete; publication has not been
+authorized or performed.** No tag, GitHub Release or package-index upload exists.
 
-Groq complete-response and native-streaming scenarios must each verify model
-selection of the arithmetic tool, one actual execution, exact sum and unpredictable
-observation receipt, final structured correctness and known token usage.
-Authorization covers these two scenarios exclusively within the Groq free-tier
-quota, with at most six model requests combined and no automatic retry. The
-execution shell reports `GROQ_API_KEY` unset; zero live requests have been sent.
+The mandatory Groq gate passed on 2026-11-27: for `openai/gpt-oss-20b`, both the
+complete-response and native-streaming scenarios showed model selection of the
+arithmetic tool, one actual host execution, the exact sum and an unpredictable
+tool receipt in the final structured answer, and known token usage. Four model
+requests were made within the free-tier allowance (ceiling six), with no automatic
+retry. Sanitized records: [groq-live-verification.json](../evaluation/results/groq-live-verification.json).
 
 | Provider | Classification | Evidence |
 |---|---|---|
-| Groq (`GroqModel`, OpenAI-compatible profile) | Offline-verified; live verification pending | Deterministic HTTP/SSE fixtures; live gate blocked on key availability |
+| Groq (`GroqModel`) | Live-verified for `openai/gpt-oss-20b` | Two live scenarios (4 requests) plus deterministic HTTP/SSE fixtures |
 | OpenAI (`OpenAIChatModel`) | Offline-verified; live verification blocked | Live attempts failed with `provider_rate_limit` (account quota); not a release gate |
 | Anthropic (`AnthropicModel`) | Experimental; offline-verified | Deterministic fixtures only; not live-verified |
 
-Successful Groq results will not establish OpenAI API compatibility. Users supply
+Successful Groq results do not establish OpenAI API compatibility, other Groq
+models, native structured-output guarantees or broad task quality. Users supply
 their own credentials; no maintainer API credential is included in code or packages.
 
-Independent offline gates remain required: complete tests/coverage, lint/format,
-strict typing, demos, dependency/advisory checks, builds, clean core/provider/MCP
-installs, installed smoke, documentation, history/archive audit, Git integrity,
-private remote synchronization and current successful CI.
+Offline gates for this release are recorded in [testing.md](testing.md): tests and
+coverage, lint/format, strict typing, demos, dependency advisories, builds, clean
+core/provider/MCP installs, archive/history audit, Git integrity and CI.
 
-Only after both Groq scenarios and offline gates pass may v0.1.0 be prepared.
-Fix confirmed live compatibility defects with deterministic regressions and rerun
-affected gates before final builds. Keep selected model/API/date/usage/effect
-evidence without keys. Exact procedure: [live-verification.md](live-verification.md).
-No final GitHub Release, PyPI publication or public visibility change is authorized.
+Remaining actions need separate authorization: create the `v0.1.0` tag, publish a
+GitHub Release, publish to a package index, or change repository visibility
+(currently private). Release notes: [release-notes-0.1.0.md](release-notes-0.1.0.md).

@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "kind": "live_provider_verification",
+  "provider": "groq",
+  "model": "openai/gpt-oss-20b",
+  "api_endpoint": "https://api.groq.com/openai/v1/chat/completions",
+  "date_utc": "2026-11-27",
+  "source_commit": "bb2981edee654a7016587b33ae7a75d24913c825",
+  "plan": "Groq free tier",
+  "model_requests_total": 4,
+  "request_ceiling": 6,
+  "automatic_retries": 0,
+  "scenario": "One model-selected sum_integers(17, 25) call executed once by the host; the final JSON had to reproduce the sum and a tool-generated unpredictable receipt.",
+  "runs": [
+    {
+      "scenario": "groq-complete",
+      "verified_at": "2026-11-27T03:58:34.566283+00:00",
+      "api_profile": "groq-chat:https://api.groq.com/openai/v1/chat/completions:openai/gpt-oss-20b",
+      "native_streaming": false,
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "status": "completed",
+      "tool_count": 1,
+      "model_turns": 2,
+      "output_token_limit": 512,
+      "observation_verified": true,
+      "usage": {
+        "input_tokens": 534,
+        "output_tokens": 69
+      }
+    },
+    {
+      "scenario": "groq-streaming",
+      "verified_at": "2026-11-27T03:58:36.775935+00:00",
+      "api_profile": "groq-chat:https://api.groq.com/openai/v1/chat/completions:openai/gpt-oss-20b",
+      "native_streaming": true,
+      "provider": "groq",
+      "model": "openai/gpt-oss-20b",
+      "status": "completed",
+      "tool_count": 1,
+      "model_turns": 2,
+      "output_token_limit": 512,
+      "observation_verified": true,
+      "usage": {
+        "input_tokens": 531,
+        "output_tokens": 66
+      }
+    }
+  ],
+  "claims": "Evidence for this model, endpoint and scenario only; no broad model-quality, schema-portability or other-provider claim.",
+  "credentials": "None recorded; literal-key comparison against the evidence directory passed on the operator's terminal."
+}

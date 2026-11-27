@@ -25,17 +25,16 @@ The following supersedes the earlier candidate deferrals for the target release.
 | Phase | Status | Acceptance |
 |---|---|---|
 | 9 Engineering audit | Complete for current architecture | Review all boundaries; regression fixes and full checks |
-| 10 Providers | Offline complete; live gate blocked | Official contract review, deterministic fixtures, opt-in live matrix |
-| 11 Native streaming | Offline complete; live gate blocked | Bounded deltas and complete validated assembly; interruption tests |
+| 10 Providers | Complete; Groq live-verified, OpenAI quota-blocked, Anthropic experimental | Official contract review, deterministic fixtures, opt-in live check |
+| 11 Native streaming | Complete; Groq live-verified for one model | Bounded deltas and complete validated assembly; interruption tests |
 | 12 Optional MCP | Complete for documented HTTP/SDK scope | Versioned protocol/transport scope; local server conformance through Tool Engine |
 | 13 SDK/CLI | Complete for documented local SDK/CLI | Complete continuation, cleanup and structured-error flows |
 | 14 Evaluation | Complete for documented deterministic scope | Expanded scenarios and raw reproducible overhead evidence |
 | 15 Documentation | Complete for documented commands/scope | Verify supported commands and compatibility scope |
-| 16 Final gates | Independent gates passed; live-provider release gate blocked | All local/CI/package/security gates; explicit release blockers |
+| 16 Final gates | Complete for v0.1.0; publication awaits authorization | All local/CI/package/security gates; explicit release blockers |
 
-Current release acceptance supersedes historical dual-provider live gates:
-Groq complete-response and native-stream tool/receipt checks (free tier) are
-mandatory; OpenAI is offline-verified with live verification blocked by quota;
-Anthropic remains experimental and offline-verified. Groq scope is authorized
-(six requests combined), currently blocked on credential availability in the
-execution environment.
+Release acceptance for v0.1.0 supersedes historical dual-provider live gates:
+Groq complete-response and native-stream tool/receipt checks (free tier) were
+mandatory and passed for `openai/gpt-oss-20b` on 2026-11-27. OpenAI is
+offline-verified with live verification blocked by quota; Anthropic remains
+experimental and offline-verified.

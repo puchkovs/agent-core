@@ -1,7 +1,7 @@
 # Security and reliability verification
 
-Candidate: 0.1.0a1, 2026-11-27. This is an engineering report, not a security
-certification. The full deterministic suite passes 257 tests with 97.42% combined
+Release 0.1.0, 2026-11-27. This is an engineering report, not a security
+certification. The full deterministic suite passes 296 tests with 97.52% combined
 statement/branch coverage; every critical runtime, streaming, transport and MCP
 component meets the independent 90% gate.
 
@@ -37,11 +37,11 @@ arbitrary external exactly-once guarantee, database encryption or automatic data
 retention. Deadlines cannot kill threads or recall remote effects. See SECURITY.md,
 streaming.md, mcp.md and testing.md for exact boundaries.
 
-Live tool/stream interoperability remains unverified for every provider. Two
-bounded Groq free-tier scenarios are authorized, six requests combined, no
-automatic retries; they await a key in the executing environment. OpenAI live
-verification is blocked by account quota. Anthropic remains experimental and
-offline-verified. Final v0.1.0 must remain blocked until the Groq gates pass and
-candidate packages/CI are reverified for any resulting changes. Provider
+Live tool/stream interoperability is verified for one provider scenario only:
+Groq `openai/gpt-oss-20b`, complete-response and native-stream modes, 2026-11-27,
+four requests, no retries, with a literal-key comparison of the evidence on the
+operator's terminal. OpenAI live verification is blocked by account quota.
+Anthropic remains experimental and offline-verified. These are single-scenario
+smoke results, not a security or broad-quality guarantee. Provider
 responses with unknown fields (including returned reasoning text) are rejected,
 and a repeated Groq usage receipt is accepted only when its counters are identical.

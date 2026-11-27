@@ -43,7 +43,8 @@ for path in [root / "README.md", *sorted((root / "docs").rglob("*.md"))]:
     for block in re.findall(r"```python\n(.*?)```", text, re.S):
         ast.parse(block)
 
-wheel = root / "dist/agent_core_runtime-0.1.0a1-py3-none-any.whl"
+version = re.search(r'^version = "([^"]+)"', (root / "pyproject.toml").read_text(), re.M)[1]
+wheel = root / f"dist/agent_core_runtime-{version}-py3-none-any.whl"
 with zipfile.ZipFile(wheel) as archive:
     names = archive.namelist()
     assert any(name.endswith("/licenses/LICENSE") for name in names)
@@ -55,7 +56,7 @@ with zipfile.ZipFile(wheel) as archive:
         assert not Path(name).is_absolute() and ".." not in Path(name).parts
         assert not any(p in {".git", ".venv", "__pycache__", ".env"} for p in Path(name).parts)
 
-with tarfile.open(root / "dist/agent_core_runtime-0.1.0a1.tar.gz") as archive:
+with tarfile.open(root / f"dist/agent_core_runtime-{version}.tar.gz") as archive:
     for member in archive.getmembers():
         path = Path(member.name)
         assert not path.is_absolute() and ".." not in path.parts

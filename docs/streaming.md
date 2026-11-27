@@ -45,11 +45,12 @@ stream requests cancellation and joins its driver. The runtime suppresses provis
 delta persistence when secrets filtering is configured, then checks the assembled
 envelope; direct SDK consumers must protect their own output and logs.
 
-Verified offline only against deterministic HTTP streams. No real provider stream
-has been called. References: [OpenAI Chat](https://developers.openai.com/api/reference/resources/chat)
+Verified against deterministic HTTP streams and, for one Groq model, one live
+stream per mode (see below). References: [OpenAI Chat](https://developers.openai.com/api/reference/resources/chat)
 and [Anthropic streaming](https://platform.claude.com/docs/en/build-with-claude/streaming).
 
-After explicit quota or cost authority, the existing opt-in live_smoke.py accepts
-AGENT_CORE_STREAMING=1 for native streaming. Run it separately for each provider
-and also in default complete-response mode; it requires a known usage receipt
-and records date, model, API profile and mode. This procedure has not been run live.
+The opt-in live_smoke.py accepts AGENT_CORE_STREAMING=1 for native streaming; it
+requires a known usage receipt and records date, model, API profile and mode. It
+was run live once in each mode for Groq `openai/gpt-oss-20b` on 2026-11-27 (see
+[live-verification.md](live-verification.md)); no other provider's stream has been
+called.

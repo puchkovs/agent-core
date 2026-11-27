@@ -1,13 +1,22 @@
 # Changelog
 
-## Unreleased
+## 0.1.0 — 2026-11-27
+
+First release preparation (private; not tagged or published). Highlights:
+see [release notes](docs/release-notes-0.1.0.md).
 
 - Add `GroqModel`, an OpenAI-compatible profile for Groq with native streaming,
-  `x_groq` usage normalization, documented reasoning controls and a final-JSON
-  fallback in place of unsupported tool-compatible schema output.
-- Live gate for v0.1.0 changed from OpenAI to Groq (free tier); OpenAI is
-  offline-verified with live verification blocked by quota; Anthropic remains
-  experimental. No live Groq result is recorded yet.
+  `x_groq` usage normalization, reasoning controls for documented models and a
+  final-JSON fallback in place of schema output that Groq does not offer with tools.
+- Live-verify Groq `openai/gpt-oss-20b` in complete-response and native-streaming
+  modes (four requests, free tier); evidence in
+  `evaluation/results/groq-live-verification.json`.
+- OpenAI remains offline-verified (live blocked by account quota); Anthropic remains
+  experimental and offline-verified.
+- Include optional MCP Streamable HTTP tools, native streaming for OpenAI-compatible
+  and Anthropic adapters, SDK, CLI and offline demonstrations from the alpha line.
+- Add a version-consistency test and derive archive-audit file names from the
+  project version.
 
 ## 0.1.0a1 — 2026-11-27
 
@@ -18,6 +27,5 @@ outputs; lifecycle event cursors; usage accounting; optional OpenAI Chat and
 Anthropic Messages adapters; Python SDK, CLI and three offline demonstrations.
 
 Native OpenAI/Anthropic streaming and optional MCP tools were subsequently
-implemented and offline-verified. OpenAI live verification remains a final-release
-gate. Anthropic is experimental and offline-verified, not live-verified. This
-candidate is not the final v0.1.0 release and is not published to a package index.
+implemented and offline-verified. (Historical note: this alpha was superseded by
+0.1.0.)

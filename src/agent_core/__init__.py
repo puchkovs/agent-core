@@ -20,7 +20,7 @@ from .runtime import Runtime
 from .store import Store
 from .tools import Registry, Tool
 
-__version__ = "0.1.0a1"
+__version__ = "0.1.0"
 __all__ = [
     "Call",
     "CoreError",

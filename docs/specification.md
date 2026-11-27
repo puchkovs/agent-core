@@ -1,6 +1,6 @@
 # Execution contract
 
-Status: accepted for implementation, 2026-11-27. Package candidate: 0.1.0a1.
+Status: accepted for implementation, 2026-11-27. Package: 0.1.0.
 Supported baseline: CPython 3.12 on Linux. All tool execution is sequential.
 
 ## Boundaries and public API

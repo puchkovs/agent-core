@@ -4,13 +4,14 @@
 |---|---|---|---|
 | `ScriptedModel` | Complete envelopes indexed by durable turn | Offline unit/E2E | Model intelligence claims |
 | `OpenAIChatModel` | HTTPS Chat Completions, text, client function calls, usage, JSON schema request | Mock HTTP round trips and runtime fixtures | Responses API, audio, images, server tools |
-| `GroqModel` | OpenAI-compatible Chat Completions profile for Groq: text, client function calls, native streaming, usage, final-JSON instruction with host validation | Offline fixtures; live gate pending | Native JSON-schema output, parallel tool calls, built-in/remote server tools, returned reasoning text |
+| `GroqModel` | OpenAI-compatible Chat Completions profile for Groq: text, client function calls, native streaming, usage, final-JSON instruction with host validation | Offline fixtures; live-verified for `openai/gpt-oss-20b` only | Native JSON-schema output, parallel tool calls, built-in/remote server tools, returned reasoning text |
 | `AnthropicModel` (experimental) | HTTPS Messages, explicit `2023-06-01` header, text/client-tool blocks, usage, opaque thinking replay | Offline fixtures only; not live-verified | Newer version profiles, server tools |
 
-**No real model request has succeeded for this candidate.** Earlier OpenAI attempts
-failed with `provider_rate_limit` (account quota); no Groq request has been sent.
-Fixture verification proves normalization behavior for the supplied shapes, not
-live service support.
+**Live evidence exists for exactly one profile:** Groq with `openai/gpt-oss-20b`,
+non-streaming and native streaming, on 2026-11-27 ([evidence](../evaluation/results/groq-live-verification.json)).
+Earlier OpenAI attempts failed with `provider_rate_limit` (account quota), so OpenAI
+and Anthropic rest on fixture verification, which proves normalization behavior for
+the supplied shapes, not live service support.
 No model name or general compatible-server claim is implied by these adapters.
 
 Install the `providers` extra, then instantiate an adapter with a host-provided
@@ -125,15 +126,16 @@ model = GroqModel("openai/gpt-oss-20b", os.environ["GROQ_API_KEY"], streaming=Tr
 
 | Provider | Non-streaming | Native streaming | Status |
 |---|---|---|---|
-| Groq | Offline fixtures | Offline fixtures | Live verification pending (key unavailable to the execution environment) |
+| Groq | Live-verified (`openai/gpt-oss-20b`) | Live-verified (`openai/gpt-oss-20b`) | Live-verified for that model and scenario; other Groq models offline only |
 | OpenAI | Offline fixtures | Offline fixtures | Live verification blocked by API rate limit/quota |
 | Anthropic | Offline fixtures | Offline fixtures | Experimental |
 
 ## v0.1.0 acceptance
 
 Groq non-streaming and native-streaming tool/receipt verification within the free
-tier are mandatory. OpenAI is offline-verified; its live verification is blocked
-and is not a gate. Anthropic remains experimental and offline-verified. Groq
-results never imply original OpenAI API compatibility. No model is live-verified
-until successful evidence is recorded. Each user supplies their own credentials
-through the host environment; the project never ships maintainer credentials.
+tier was mandatory and passed for `openai/gpt-oss-20b` (four model requests, no
+retries). OpenAI is offline-verified; its live verification is blocked by account
+quota and was not a gate. Anthropic remains experimental and offline-verified.
+Groq results never imply original OpenAI API compatibility, and no other model is
+live-verified. Each user supplies their own credentials through the host
+environment; the project never ships maintainer credentials.

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "agent-core-runtime"
-version = "0.1.0a1"
+version = "0.1.0"
 description = "A local model-directed runtime with explicit tool authority and durable outcomes"
 readme = "README.md"
 requires-python = ">=3.12"

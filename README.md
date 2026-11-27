@@ -4,9 +4,10 @@ Agent Core is a local Python runtime for model-directed, multi-step tool use.
 The host controls tools, permissions, approvals and budgets. SQLite records
 admission and outcomes so interrupted writes are not blindly repeated.
 
-**Version 0.1.0a1 — engineering candidate.** Offline contracts are tested. Live
-endpoint verification remains a release gate. Native Python tools have process
-privileges; this package does not provide an operating-system sandbox.
+**Version 0.1.0 (private release candidate; not published).** Offline contracts
+are tested, and one Groq model/scenario is live-verified (see the provider table
+below). Native Python tools have process privileges; this package does not provide
+an operating-system sandbox.
 
 ## What it provides
 
@@ -38,7 +39,7 @@ make check
 
 For runtime-only use: `pip install .`. Add `[providers]` for the HTTP adapters.
 The distribution name is `agent-core-runtime`; the import namespace is
-`agent_core`. Nothing is published to a package index as part of this candidate.
+`agent_core`. Nothing is published to a package index.
 
 ## Python quick start
 
@@ -123,7 +124,7 @@ make build
 [Testing](docs/testing.md) records executed checks;
 [evaluation](docs/evaluation.md) explains the oracles and overhead measurements.
 The [release status](docs/release-readiness.md) distinguishes offline verification
-from pending live checks. See [roadmap](docs/roadmap.md) for scope and
+from the single live-verified provider scenario. See [roadmap](docs/roadmap.md) for scope and
 [progress](docs/progress.md) for continuation.
 
 ## Further documentation
@@ -157,11 +158,14 @@ roles are documented in [dependencies](docs/dependencies.md).
 
 | Provider | Status |
 |---|---|
-| Groq | Offline-verified; live non-streaming and native-streaming checks pending |
+| Groq | **Live-verified** for `openai/gpt-oss-20b` (non-streaming and native streaming, 2026-11-27, free tier) |
 | OpenAI | Offline-verified; live verification blocked by API rate limit/quota |
 | Anthropic | Experimental; offline-verified |
 
-Groq must pass live non-streaming and native-streaming tool/receipt verification
-before v0.1.0; that result does not establish original OpenAI API compatibility.
-Users must provide their own API credentials. No maintainer API key is included in
-this project.
+Live verification means one scripted scenario per mode: the model selected an
+arithmetic tool, the host executed it once, and the final JSON reproduced the sum
+and an unpredictable tool receipt, with known usage
+([evidence](evaluation/results/groq-live-verification.json)). It does not establish
+broad model quality, other Groq models, structured-output guarantees or original
+OpenAI API compatibility. Users must provide their own API credentials. No
+maintainer API key is included in this project.

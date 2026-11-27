@@ -1,13 +1,14 @@
 # Final live verification procedure
 
-Status: prepared and tested offline. **No live Groq request has been sent.** The
-execution environment of the prior sessions did not inherit `GROQ_API_KEY`, so the
-two checks below must be run from a trusted local terminal that holds the key.
-Groq live verification is authorized only within the free-tier quota: at most six
-model requests combined, no automatic retries. Do not start either command more
-than once under this allowance. OpenAI live verification was attempted earlier and
-failed with `provider_rate_limit` (account billing/quota unavailable); it is not a
-release gate and is not claimed.
+Status: **completed 2026-11-27.** Both Groq scenarios passed for
+`openai/gpt-oss-20b` at source commit bb2981e: four model requests within the
+free-tier allowance (ceiling six), no automatic retry. Sanitized evidence:
+[groq-live-verification.json](../evaluation/results/groq-live-verification.json).
+Do not rerun under the original allowance; a rerun, or another model, needs new
+authorization. The procedure below remains the way to reproduce the check with your
+own key. OpenAI live verification was attempted earlier and failed with
+`provider_rate_limit` (account billing/quota unavailable); it is not a release gate
+and is not claimed.
 
 ## Credentials and model selection
 
@@ -121,20 +122,16 @@ model-turn count, tool count, output-token limit and usage; `source-commit.txt`
 holds the commit under test. They never contain the key. Copy results into
 `docs/testing.md` only after reviewing them.
 
-## Final release checklist
+## Release checklist
 
 - [x] Groq free-tier scope authorized: two scenarios, six requests combined.
-- [ ] `GROQ_API_KEY` available to the executing process (blocked in prior sessions).
-- [ ] Both Groq live checks pass; source/model/profile/date/usage evidence reviewed.
-- [ ] Confirmed wire differences fixed with deterministic regressions, if needed.
-- [ ] Rerun `make check`, builds, clean core/provider/MCP installs and archive audit
-      after any resulting implementation or dependency change.
-- [ ] Record final commit, private remote equality and successful current CI.
-- [ ] Recheck dependency advisories, documentation, Git integrity and cleanliness.
-- [ ] Review final compatibility matrix, security report and version-change approval.
-- [ ] Only after mandatory gates pass, change the version to 0.1.0 and rebuild.
-- [ ] Obtain separate authorization for any final release/tag, GitHub Release,
-      public repository visibility change or PyPI publication.
+- [x] `GROQ_API_KEY` supplied by the operator through a hidden prompt.
+- [x] Both Groq live checks passed; evidence validated independently.
+- [x] No wire difference required a code change after the live run.
+- [x] Offline gates, builds, clean installs and archive audit rerun for 0.1.0.
+- [x] Version changed to 0.1.0; release notes written.
+- [ ] Separate authorization for the release tag, GitHub Release, public
+      visibility change or package-index publication.
 
-Version remains 0.1.0a1 until the mandatory live gate succeeds. Keeping successful
-smoke evidence does not establish broad model quality or every API feature.
+Successful smoke evidence does not establish broad model quality or every API
+feature.
