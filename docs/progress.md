@@ -1,6 +1,6 @@
 # Progress
 
-Current extended candidate: 257 passing tests, 97.42% combined coverage. Native
+Current extended candidate: 266 passing tests, 97.42% combined coverage. Native
 streaming and optional MCP are implemented for their documented offline scopes.
 The sections below retain historical verification milestones; they are not all
 statements about the current implementation. Live-provider verification is pending.
@@ -249,3 +249,34 @@ are completed for the documented scope; Phase 16 release gate remains blocked.
 Live verification preparation: live_smoke.py now supports AGENT_CORE_STREAMING=1,
 records API profile/date/mode and requires known usage. Its disabled guard was
 verified locally; no paid endpoint was contacted.
+
+## Final release review — 2026-11-27
+
+Verified restored review HEAD f21cde0da23a42d97559ce82c1eb791fc89a396d matched private
+origin/main and CI run 45931321486 passed. Reviewed all 18 reachable commits,
+203 historical blobs, commit subjects, refs (no tags), working tracked/untracked
+files and hidden-file inventories. Only legitimate Agent Core/dependency materials
+were identified. No inappropriate historical content requiring correction was
+found; no history was rewritten. Raw audit inputs remain outside the repository.
+Credential-pattern and reference scans are scoped evidence, not a universal proof.
+
+Strengthened live smoke to require structured sum 42 plus an unpredictable receipt
+returned only by actual tool execution. Nine offline procedure regressions verify
+both provider/mode combinations, reject fabricated receipts and enforce opt-in.
+The live procedure is bounded to three turns, one tool, 60 seconds and 128 output
+tokens per turn. docs/live-verification.md gives all four exact Bash commands,
+silent key setup, model requirements, expected usage and final release checklist.
+Its shell syntax was checked without executing the paid commands. Neither provider
+key is present in this process environment; no paid requests were made.
+
+Actual final make check: 266 tests pass, 97.42% combined coverage, every critical
+component above 90%, Ruff lint/format (40 files), strict mypy (18 source files) and
+all three demos. Builds, archive/source/link audit, three clean installation scopes,
+installed SDK/CLI smoke, dependency consistency and git fsck pass. Fresh pinned
+MCP/runtime advisory scan returned no known vulnerabilities. Raw verification and
+advisories: evaluation/results/release-review*.json. Version remains 0.1.0a1.
+
+Remaining: explicit paid-call authorization, authorized provider keys/model IDs,
+four successful live checks, fix any wire differences with regressions, then refresh
+relevant gates and final package/CI evidence before considering final versioning.
+Publication/visibility changes require separate authorization.

@@ -1,0 +1,47 @@
+{
+  "reviewed_base_commit": "f21cde0da23a42d97559ce82c1eb791fc89a396d",
+  "version": "0.1.0a1",
+  "python": "3.12.3",
+  "tests_passed": 266,
+  "coverage_totals": {
+    "covered_lines": 1545,
+    "num_statements": 1574,
+    "percent_covered": 97.42173112338858,
+    "percent_covered_display": "97",
+    "missing_lines": 29,
+    "excluded_lines": 7,
+    "percent_statements_covered": 98.15756035578144,
+    "percent_statements_covered_display": "98",
+    "num_branches": 598,
+    "num_partial_branches": 27,
+    "covered_branches": 571,
+    "missing_branches": 27,
+    "percent_branches_covered": 95.48494983277592,
+    "percent_branches_covered_display": "95"
+  },
+  "clean_installs": [
+    "minimal core: SDK/CLI smoke, no optional HTTP dependency",
+    "provider hash-locked environment: SDK smoke and pip check",
+    "MCP hash-locked environment: SDK smoke, optional MCP import, pip check"
+  ],
+  "independence_audit": {
+    "reachable_commits_at_start": 18,
+    "reachable_blobs_at_start": 203,
+    "inappropriate_content_identified": false,
+    "raw_inputs_location": "outside repository",
+    "scope": [
+      "working files including untracked and hidden inventory",
+      "complete reachable history and commit subjects",
+      "all refs (main and origin/main; no tags)",
+      "source, docs, tests, examples, metadata, CI",
+      "source and wheel archive audits"
+    ],
+    "limitation": "Pattern scans and local review do not prove absence of every possible secret or provenance issue."
+  },
+  "live_requests_executed": 0,
+  "credential_presence": {
+    "OPENAI_API_KEY": false,
+    "ANTHROPIC_API_KEY": false
+  },
+  "release_blocker": "Explicit paid-call authority, authorized model IDs and credentials, then four successful live checks."
+}

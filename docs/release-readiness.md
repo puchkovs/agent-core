@@ -6,7 +6,7 @@ Implemented phases 9–15: engineering audit, improved providers, native OpenAI 
 Anthropic streaming, optional MCP SDK 1.30.0/protocol 2025-11-25 Streamable HTTP
 tools, coherent SDK/CLI, expanded evaluation and current documentation.
 
-Phase 16 independently achievable gates passed: 257 tests, 97.42% combined
+Phase 16 independently achievable gates passed: 266 tests, 97.42% combined
 coverage, critical components above 90%, lint, formatting, strict typing, three
 demos, dependency consistency, pinned advisory check, builds, three clean
 installation scopes, installed offline SDK/CLI smoke, history/archive/documentation
@@ -28,3 +28,7 @@ execution, process sandboxing and additional model modalities are unsupported.
 
 Repository remains private. No paid calls, final version bump, release tag,
 GitHub Release, PyPI publication or public visibility change is authorized.
+
+The exact secure four-mode live procedure and final checklist are in
+[live-verification.md](live-verification.md). Latest review found no inappropriate
+historical content requiring correction; no history rewrite is needed.

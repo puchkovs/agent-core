@@ -6,7 +6,7 @@ HEAD and final CI. Source implementation completed at 52ce5db; subsequent commit
 record evaluation/docs/verification. Version remains 0.1.0a1. Do not restart phases
 9–15 or recreate the repository.
 
-Independent Phase 16 gates passed: 257 tests, 97.42% combined coverage, lint/format,
+Independent Phase 16 gates passed: 266 tests, 97.42% combined coverage, lint/format,
 strict typing, demos, builds, clean core/provider/MCP installs, installed offline
 SDK/CLI smoke, dependency/advisory and history/archive/doc checks. The final CI
 workflow additionally runs archive audit and installed optional SDK smoke. Verify
@@ -29,3 +29,9 @@ historical results or infer model intelligence from runtime correctness fixtures
 Keep the repository private. Final release/tag, PyPI publication and paid calls
 require separate authority. No further independent roadmap implementation is
 currently recorded as pending for the documented compatibility scope.
+
+Final review hardened live_smoke.py: structured sum and unpredictable tool receipt
+are required. Use docs/live-verification.md for exact commands and request bounds.
+No paid authority/keys are available in the reviewed session; paid tests were not
+run. Audit/reverification evidence is in release-review.json; raw audit inputs stay
+outside the repository. Verify the new evidence commit CI with gh run list.

@@ -80,3 +80,7 @@ put API keys in evidence files. Native token streaming is fixture-verified; see 
 
 Native streaming is now available with streaming=True; see [streaming](streaming.md)
 for exact fixture-verified scope. Earlier token-delta deferrals describe the historical candidate.
+
+The final live gate now verifies the exact sum and an unpredictable receipt from
+the tool observation, with known usage. See [secure live commands and release
+checklist](live-verification.md) for all four modes and configured request limits.

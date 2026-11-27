@@ -8,11 +8,12 @@ This sends a real request and may incur provider charges.
 import asyncio
 import json
 import os
+import secrets
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 
-from agent_core import Policy, Registry, Runtime, Status, Store, Tool
+from agent_core import Limits, Policy, Registry, Runtime, Status, Store, Tool
 
 
 async def main() -> None:
@@ -25,11 +26,12 @@ async def main() -> None:
         raise SystemExit("AGENT_CORE_STREAMING must be 0 or 1.")
     native_stream = streaming == "1"
     effects = []
+    receipt = secrets.token_hex(16)
 
-    def sum_integers(left: int, right: int) -> int:
-        """Add two integers and return their sum. Use this tool for the requested arithmetic."""
+    def sum_integers(left: int, right: int) -> dict[str, int | str]:
+        """Return the sum and a receipt that must be copied into the final answer."""
         effects.append((left, right))
-        return left + right
+        return {"sum": left + right, "receipt": receipt}
 
     if provider == "openai":
         from agent_core.providers.openai_chat import OpenAIChatModel
@@ -53,13 +55,21 @@ async def main() -> None:
                 store,
                 Policy(allowed_tools=frozenset({"sum_integers"})),
                 secrets=(key,),
+                limits=Limits(turns=3, tools=1, seconds=60, output_tokens=128),
             )
             run = await runtime.run(
-                "Call sum_integers once with left=17 and right=25, then answer with the sum."
+                "Call sum_integers once with left=17 and right=25. "
+                "Return JSON with sum and the exact receipt from the tool observation.",
+                output_schema={
+                    "type": "object",
+                    "properties": {"sum": {"type": "integer"}, "receipt": {"type": "string"}},
+                    "required": ["sum", "receipt"],
+                    "additionalProperties": False,
+                },
             )
             assert run.status == Status.COMPLETED, run.reason
             assert effects == [(17, 25)], effects
-            assert "42" in str(run.output)
+            assert run.output == {"sum": 42, "receipt": receipt}, "Incorrect tool observation."
             assert run.usage.total is not None, "Live usage receipt is required."
             print(
                 json.dumps(
@@ -71,6 +81,8 @@ async def main() -> None:
                         "model": model_id,
                         "status": run.status,
                         "tool_count": run.tool_count,
+                        "model_turns": run.turns,
+                        "observation_verified": True,
                         "usage": run.usage.model_dump(),
                     },
                     indent=2,
