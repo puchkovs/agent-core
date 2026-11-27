@@ -148,3 +148,22 @@ passed. No dependency versions changed or paid endpoint calls occurred.
 Phase 10 offline work is complete; live interoperability remains a release blocker
 because paid-call authority is absent. Next independently achievable task is
 Phase 11 native provider streaming with bounded parsing and complete assembly.
+
+## Phase 11 framing foundation — 2026-11-27
+
+Added original incremental SSE framing with a total wire-byte limit, strict UTF-8,
+BOM support, LF/CRLF/CR line endings, multiline data, comment/unknown-field
+handling, pull backpressure and cancellation propagation. Unterminated frames
+fail closed. No reconnect or replay is implemented. This is an internal framing
+foundation: provider native streaming is not yet connected or advertised.
+
+Full make check passed: 173 tests, 97.70% combined coverage, all critical modules
+above 90%, Ruff lint/format, strict mypy (16 source files), and three offline demos.
+Provider milestone commit `616e4ee` passed CI run 45923492372. Phase 9 commit
+`40b8dbf` passed CI run 45923353317.
+
+Next: implement bounded HTTP SSE consumption and provider-specific stream
+assemblers, then expose text/argument/usage deltas and complete validated response
+assembly. Require provider terminal events, test multiple calls, malformed events,
+interruptions, timeouts and no partial dispatch. Phase 11 is incomplete; phases
+12–16 remain outstanding. Live calls still require paid-call authority.

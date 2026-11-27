@@ -1,27 +1,32 @@
 # Continue development
 
-Private origin/main preserves all original history. Read `git log -1` for current
-commit. Use existing .venv; do not repeat baseline reproduction.
+Continue private origin/main; `git log -1` gives the current framing milestone.
+Preserve all five original commits and subsequent history. Use existing .venv
+and `make check PYTHON=.venv/bin/python`; no new dependency versions are needed.
+Do not repeat baseline reproduction or completed Phase 9/10 offline work.
 
 
-## Phase 10 provider improvements — 2026-11-27
+## Phase 11 framing foundation — 2026-11-27
 
-Completed the offline provider review and fixes: strict token counters, Anthropic
-cache-aware input accounting, selected provider identity/raw usage metadata,
-malformed-object classification, refusal validation and rejection of falsy
-nontext OpenAI content. Existing replay/tool-call/structured-output fixtures
-remain passing. Endpoint/model identifiers remain host-configurable.
-Official reference links and exact profile limitations are in docs/providers.md.
+Added original incremental SSE framing with a total wire-byte limit, strict UTF-8,
+BOM support, LF/CRLF/CR line endings, multiline data, comment/unknown-field
+handling, pull backpressure and cancellation propagation. Unterminated frames
+fail closed. No reconnect or replay is implemented. This is an internal framing
+foundation: provider native streaming is not yet connected or advertised.
 
-Full make check: 158 tests pass, 97.64% combined coverage, all critical components
-above 90%, Ruff/format, strict mypy and three demos. Phase 9 CI run 45923353317
-passed. No dependency versions changed or paid endpoint calls occurred.
-Phase 10 offline work is complete; live interoperability remains a release blocker
-because paid-call authority is absent. Next independently achievable task is
-Phase 11 native provider streaming with bounded parsing and complete assembly.
+Full make check passed: 173 tests, 97.70% combined coverage, all critical modules
+above 90%, Ruff lint/format, strict mypy (16 source files), and three offline demos.
+Provider milestone commit `616e4ee` passed CI run 45923492372. Phase 9 commit
+`40b8dbf` passed CI run 45923353317.
 
-Next: implement Phase 11. Preserve the existing lifecycle event stream. Provider
-deltas must not authorize tool execution; only complete validated responses can
-be checkpointed for dispatch. Cover fragments, multiple calls, missing terminal
-events, cancellation, timeouts, backpressure and malformed events. Then phases
-12–16 remain. Keep version alpha, origin private and no final publication.
+Next: implement bounded HTTP SSE consumption and provider-specific stream
+assemblers, then expose text/argument/usage deltas and complete validated response
+assembly. Require provider terminal events, test multiple calls, malformed events,
+interruptions, timeouts and no partial dispatch. Phase 11 is incomplete; phases
+12–16 remain outstanding. Live calls still require paid-call authority.
+
+See docs/providers.md for the reviewed provider profile and usage semantics.
+The SSE parser is src/agent_core/providers/sse.py, with tests/test_streaming.py.
+Existing Runtime.stream remains durable lifecycle events only. New deltas must
+never grant execution authority. Keep final v0.1.0 and public publication blocked
+until all mandatory gates pass. No paid API call is authorized.
