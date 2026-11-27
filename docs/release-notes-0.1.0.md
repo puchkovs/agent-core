@@ -4,7 +4,8 @@ Agent Core is a local Python runtime for model-directed, multi-step tool use. Th
 host owns tools, permissions, approvals and budgets; SQLite records admission and
 outcomes so interrupted work is never blindly replayed. Distribution:
 `agent-core-runtime`; import namespace: `agent_core`; license: MIT; CPython 3.12 on
-Linux. This release is prepared in a private repository and is not published.
+Linux. Maturity: alpha. It is distributed as a GitHub Release (wheel and source
+distribution) and is not published to a package index.
 
 ## What is included
 - Sequential model-directed tool loop with JSON Schema and semantic validation,

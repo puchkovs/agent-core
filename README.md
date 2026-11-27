@@ -4,10 +4,10 @@ Agent Core is a local Python runtime for model-directed, multi-step tool use.
 The host controls tools, permissions, approvals and budgets. SQLite records
 admission and outcomes so interrupted writes are not blindly repeated.
 
-**Version 0.1.0 (private release candidate; not published).** Offline contracts
-are tested, and one Groq model/scenario is live-verified (see the provider table
-below). Native Python tools have process privileges; this package does not provide
-an operating-system sandbox.
+**Version 0.1.0 — alpha.** Offline contracts are tested, and one Groq
+model/scenario is live-verified (see the provider table below). Native Python
+tools have process privileges; this package does not provide an operating-system
+sandbox. See the [v0.1.0 release](https://github.com/puchkovs/agent-core/releases/tag/v0.1.0).
 
 ## What it provides
 
@@ -27,7 +27,23 @@ verify runtime behavior and are not language-model intelligence evaluations.
 
 ## Installation
 
-Baseline: CPython 3.12 on Linux. Install from the restored checkout:
+Baseline: CPython 3.12 on Linux. The package is not published to PyPI; install the
+wheel from the [GitHub release](https://github.com/puchkovs/agent-core/releases/tag/v0.1.0) and verify it first:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+base=https://github.com/puchkovs/agent-core/releases/download/v0.1.0
+curl -sSLO "$base/agent_core_runtime-0.1.0-py3-none-any.whl"
+curl -sSLO "$base/SHA256SUMS"
+sha256sum -c --ignore-missing SHA256SUMS
+pip install "./agent_core_runtime-0.1.0-py3-none-any.whl[providers]"
+```
+
+Omit `[providers]` for the runtime-only install (the HTTP adapters need it). The
+distribution name is `agent-core-runtime`; the import namespace is `agent_core`.
+
+To develop from a source checkout:
 
 ```sh
 python3 -m venv .venv
@@ -36,10 +52,6 @@ pip install --require-hashes -r requirements-dev.lock
 pip install -e . --no-deps
 make check
 ```
-
-For runtime-only use: `pip install .`. Add `[providers]` for the HTTP adapters.
-The distribution name is `agent-core-runtime`; the import namespace is
-`agent_core`. Nothing is published to a package index.
 
 ## Python quick start
 
@@ -125,7 +137,7 @@ make build
 [evaluation](docs/evaluation.md) explains the oracles and overhead measurements.
 The [release status](docs/release-readiness.md) distinguishes offline verification
 from the single live-verified provider scenario. See [roadmap](docs/roadmap.md) for scope and
-[progress](docs/progress.md) for continuation.
+[progress](docs/progress.md) for the development log.
 
 ## Further documentation
 
@@ -136,7 +148,7 @@ from the single live-verified provider scenario. See [roadmap](docs/roadmap.md) 
 - [Native streaming](docs/streaming.md)
 - [Optional MCP tools](docs/mcp.md)
 - [Limits, context, events and retention](docs/limits-and-events.md)
-- [Restoration and next steps](docs/continuation.md)
+- [Maintenance and next steps](docs/continuation.md)
 - [Contributing](CONTRIBUTING.md), [changelog](CHANGELOG.md)
 
 ## Current limits

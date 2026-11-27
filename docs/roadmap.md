@@ -20,7 +20,7 @@ critical contract conflicts before implementation.
 
 ## Extended release roadmap
 
-The following supersedes the earlier candidate deferrals for the target release.
+The following supersedes the earlier alpha-line deferrals for the 0.1.0 release.
 
 | Phase | Status | Acceptance |
 |---|---|---|
@@ -31,7 +31,7 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 13 SDK/CLI | Complete for documented local SDK/CLI | Complete continuation, cleanup and structured-error flows |
 | 14 Evaluation | Complete for documented deterministic scope | Expanded scenarios and raw reproducible overhead evidence |
 | 15 Documentation | Complete for documented commands/scope | Verify supported commands and compatibility scope |
-| 16 Final gates | Complete for v0.1.0; publication awaits authorization | All local/CI/package/security gates; explicit release blockers |
+| 16 Final gates | Complete; v0.1.0 published as a GitHub Release (not on PyPI) | All local/CI/package/security gates; explicit release blockers |
 
 Release acceptance for v0.1.0 supersedes historical dual-provider live gates:
 Groq complete-response and native-stream tool/receipt checks (free tier) were

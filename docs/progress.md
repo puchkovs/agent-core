@@ -1,9 +1,9 @@
 # Progress
 
-Current extended candidate: 266 passing tests, 97.42% combined coverage. Native
-streaming and optional MCP are implemented for their documented offline scopes.
-The sections below retain historical verification milestones; they are not all
-statements about the current implementation. Live-provider verification is pending.
+Current release: 0.1.0 (published 2026-11-27), 296 passing tests, 97.52% combined
+coverage. Groq `openai/gpt-oss-20b` is live-verified; OpenAI is offline-verified
+and Anthropic is experimental. The sections below retain historical verification
+milestones; they are not all statements about the current implementation.
 
 | Phase | Actual state |
 |---|---|
@@ -381,6 +381,22 @@ pip-audit on the runtime and MCP locks found no known vulnerabilities. The archi
 audit passed over 261 historical blobs; wheel/sdist metadata and members showed no
 credential patterns; git fsck was clean; refs are main and origin/main only, with no
 tags. Provenance scans found no references to internal research, other inspected
-projects or handover material in tracked files, commit messages or archives; one
+projects or internal planning material in tracked files, commit messages or archives; one
 earlier progress heading that used such wording was renamed. No tag, GitHub Release
 or package upload exists.
+
+## Post-release documentation cleanup — 2026-11-27
+
+After v0.1.0 was published (tag at e639cb5, public repository, GitHub Release with
+wheel, source distribution and SHA256SUMS), current documentation was aligned with
+that state: AGENTS.md now describes a public repository and the release-immutability
+rules; README status and installation (release wheel with checksum verification, then
+source checkout) were updated; continuation.md, release-readiness.md, the release
+notes copy on main, the live-verification checklist, roadmap and a few wording
+leftovers no longer describe the release as private or unpublished. Historical
+entries were kept. The README installation steps were executed against the public
+release URLs in a fresh virtual environment (checksum verified, `pip check` clean,
+installed 0.1.0, CLI demo completed). Markdown links and Python examples pass the
+archive/doc audit; external documentation links resolve. `make check` passed: 296
+tests, 97.52% coverage, lint, format, strict typing and three demos. The v0.1.0 tag
+and published assets were not touched; the package version is unchanged.

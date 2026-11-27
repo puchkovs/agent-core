@@ -130,8 +130,8 @@ holds the commit under test. They never contain the key. Copy results into
 - [x] No wire difference required a code change after the live run.
 - [x] Offline gates, builds, clean installs and archive audit rerun for 0.1.0.
 - [x] Version changed to 0.1.0; release notes written.
-- [ ] Separate authorization for the release tag, GitHub Release, public
-      visibility change or package-index publication.
+- [x] Tag `v0.1.0`, GitHub Release and public visibility completed 2026-11-27.
+- [ ] Package-index publication (not done; needs separate authorization).
 
 Successful smoke evidence does not establish broad model quality or every API
 feature.

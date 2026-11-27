@@ -35,7 +35,7 @@ Transport reads bounded complete JSON responses over HTTPS, does not follow
 redirects and has no automatic retries. HTTP auth, rate limit, service and
 transport failures are classified separately. Retryability is a host scheduling
 signal, not permission to repeat tools. Rate-limit backoff and provider fallback
-are not automatic in this candidate. Unknown usage remains null, not zero.
+are not automatic in this release. Unknown usage remains null, not zero.
 
 The adapter assumptions were checked against official API documentation:
 [OpenAI Chat](https://developers.openai.com/api/reference/resources/chat) and
@@ -84,7 +84,7 @@ offline-verified. Use the opt-in live_smoke.py only after cost/quota authority i
 granted; do not put API keys in evidence files. Native token streaming is fixture-verified; see streaming.md.
 
 Native streaming is now available with streaming=True; see [streaming](streaming.md)
-for exact fixture-verified scope. Earlier token-delta deferrals describe the historical candidate.
+for exact fixture-verified scope. Earlier token-delta deferrals describe the historical alpha line.
 
 The final live gate now verifies the exact sum and an unpredictable receipt from
 the tool observation, with known usage. See [secure live commands and release

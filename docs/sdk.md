@@ -1,6 +1,6 @@
 # Python SDK and custom tools
 
-The stable candidate entry points are exported from `agent_core`.
+The public entry points are exported from `agent_core`.
 `Runtime.run` creates and drives a new run. Use `create` plus `resume` to retain
 an ID before work starts. Use `store.load(id)` for a snapshot and
 `store.operations(id)` for exact recorded calls and approvals.
