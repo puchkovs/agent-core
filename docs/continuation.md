@@ -1,40 +1,25 @@
-# Restore and continue
+# Continue development
 
-The handoff archive contains `agent-core/` with complete `.git` history. Extract
-into an empty directory, then move that folder to `~/Projects/agent-core` if desired.
-Do not overwrite another checkout. A separate Git bundle is also supplied.
+Continue the existing checkout and history. Do not restore or initialize again.
+Origin is the private https://github.com/puchkovs/agent-core repository. The five
+original commits remain reachable; baseline HEAD was
+`c931cf976fa51e4eb664f529e818c40df2c872d0`. Run `git log -1` for the current audit
+commit (the commit cannot contain its own hash). The isolated `.venv` uses the
+existing hash-locked requirements; use `make check PYTHON=.venv/bin/python`.
 
-```sh
-cd ~/Projects/agent-core
-git status --short
-git fsck --full
-python3 -m venv .venv
-. .venv/bin/activate
-pip install --require-hashes -r requirements-dev.lock
-pip install -e . --no-deps
-make check
-```
+Baseline independently reproduced: 120 tests, 97.53% coverage. Current audit
+fixes: 125 tests, 97.54%; lint, format, strict mypy and three demos pass.
+Initial remote CI run 45922505014 passed. Inspect later runs before declaring CI
+current. See progress.md and roadmap.md for the extended phases 9–16.
 
-Alternative restoration from the bundle, into a new directory:
+Next: finish Phase 9. Investigate strict generated-callable input validation
+before dispatch (synchronous and asynchronous callables currently differ),
+provider malformed-object handling, cancellation admission races and transport
+bounds. Preserve dispatch/outcome persistence and conservative uncertainty.
+Then complete provider review, streaming and MCP with behavioral tests, following
+the sequential roadmap. Original native streaming/MCP deferrals do not satisfy
+the newly requested release scope. Official provider reference pages were opened;
+this is not yet a completed compatibility audit.
 
-```sh
-git clone /path/to/agent-core.bundle agent-core
-cd agent-core
-git remote remove origin
-```
-
-The bundle represents this project's independent local history, not a remote
-publication. Check the final handoff report for the exact included commit and
-verification results. Keep existing run databases outside the checkout.
-
-Next engineering task: obtain explicit cost authority and an appropriate API key
-through the host environment; select a model ID and run the opt-in live smoke.
-Record the date, provider profile, model, real tool invocation and usage. Fix any
-wire differences with regression fixtures and rerun `make check`. Repeat for the
-second profile before claiming live support for it.
-
-After those gates, update compatibility and readiness documents, rebuild and
-verify clean installations, rerun the complete cleanliness/package audit, then
-prepare a final v0.1.0 release. Remote publication remains a separate authorized
-action. MCP remains deferred unless a later task supplies a verifiable versioned
-SDK, transport and lifecycle conformance scope.
+Do not incur paid provider charges without explicit authority. Keep repository
+private. No final release, PyPI publication or history rewrite is authorized.

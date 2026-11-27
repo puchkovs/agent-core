@@ -17,3 +17,18 @@ host reconciliation; byte limits are not represented as tokenizer guarantees;
 thread cancellation cannot terminate arbitrary native code; live and mocked
 provider verification must be reported separately. These choices resolve the
 critical contract conflicts before implementation.
+
+## Extended release roadmap
+
+The following supersedes the earlier candidate deferrals for the target release.
+
+| Phase | Status | Acceptance |
+|---|---|---|
+| 9 Engineering audit | In progress | Review all boundaries; regression fixes and full checks |
+| 10 Providers | Pending | Official contract review, deterministic fixtures, opt-in live matrix |
+| 11 Native streaming | Pending | Bounded deltas and complete validated assembly; interruption tests |
+| 12 Optional MCP | Pending | Versioned protocol/transport scope; local server conformance through Tool Engine |
+| 13 SDK/CLI | Pending | Complete continuation, cleanup and structured-error flows |
+| 14 Evaluation | Pending | Expanded scenarios and raw reproducible overhead evidence |
+| 15 Documentation | Pending | Verify supported commands and compatibility scope |
+| 16 Final gates | Pending | All local/CI/package/security gates; explicit release blockers |

@@ -49,3 +49,27 @@ architecture and real crash behavior. Its high coverage does not replace the
 listed behavioral oracles, nor prove model intelligence or production security.
 Raw provider fixture failures are intentionally deterministic; no paid endpoint
 is contacted by normal tests.
+
+## Restored repository audit — 2026-11-27
+
+Verified original HEAD `c931cf976fa51e4eb664f529e818c40df2c872d0` and all five
+reachable commits; `git fsck --full` passed. Author identity is configured locally.
+Reviewed tracked paths, commit metadata, historical blob types, distribution
+members and credential/unrelated-material patterns across 87 reachable blobs.
+No pattern findings; this is not a guarantee that every possible secret is detectable.
+Created private `puchkovs/agent-core`; original remote main matched HEAD exactly.
+Baseline GitHub Actions run 45922505014 passed.
+
+Independently reproduced baseline from a temporary export of the exact commit:
+CPython 3.12.3, 120 tests, 97.53% combined coverage, Ruff, strict mypy and all
+three offline demos passed. Hash-locked development installation succeeded.
+
+Phase 9 is in progress. Fixed mutation of semantic-validator arguments by using
+an isolated JSON copy and rejecting changed arguments before dispatch. Rejected
+NaN/infinite tool timeouts at registration. Five added regression cases pass:
+125 tests, 97.54% combined coverage; every critical module exceeds 90%.
+`make check` and dependency consistency passed. No dependency versions changed.
+
+Remaining work: finish the engineering audit, then phases 10–16, including native
+provider streaming and optional MCP. Live provider calls still require explicit
+cost authority. No release tag, PyPI publication or public visibility change.

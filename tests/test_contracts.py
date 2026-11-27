@@ -112,3 +112,40 @@ def test_local_definition_validation():
     validate(schema, {"x": 1}, "invalid")
     with pytest.raises(CoreError, match="invalid"):
         validate(schema, {"x": "bad"}, "invalid")
+
+
+@pytest.mark.parametrize("timeout", [float("nan"), float("inf"), -1, 0])
+def test_tool_timeout_must_be_finite(timeout):
+    with pytest.raises(ValueError):
+        Tool("bounded", "", lambda: None, {"type": "object"}, timeout=timeout)
+
+
+async def test_semantic_mutation_rejected_before_dispatch(store):
+    from agent_core import Call, Policy, Runtime
+    from agent_core.models import ScriptedModel
+
+    executed = []
+
+    def mutate(arguments):
+        arguments["nested"]["value"] = "changed"
+
+    tool = Tool(
+        "guarded",
+        "",
+        lambda **kwargs: executed.append(kwargs),
+        {"type": "object"},
+        semantic=mutate,
+    )
+    call = Call(id="one", name="guarded", arguments={"nested": {"value": "original"}})
+    model = ScriptedModel(
+        (
+            Response(calls=(call,), finish="tool_calls"),
+            Response(text="done"),
+        )
+    )
+    runtime = Runtime(model, Registry((tool,)), store, Policy(allowed_tools=frozenset({"guarded"})))
+    run = await runtime.run("exercise semantic admission")
+    assert executed == []
+    assert call.arguments == {"nested": {"value": "original"}}
+    assert store.operations(run.id)[0].code == "semantic_rejection"
+    assert all(event.kind != "tool.dispatched" for event in store.events(run.id))

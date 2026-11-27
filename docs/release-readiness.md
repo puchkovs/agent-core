@@ -35,3 +35,10 @@ a comprehensive security certification.
 No paid provider call, remote CI execution, release tag or remote publication
 was made in this session. Do not publish from this handoff without separate
 authorization. Complete history and precise continuation instructions are supplied.
+
+## Extended release scope
+
+The target v0.1.0 additionally requires completion of phases 9–16 in roadmap.md.
+Native provider streaming and optional MCP are now required work, not accepted
+release deferrals. The restored baseline has been independently reproduced and
+private remote CI passed; the full new release gate remains unpassed.

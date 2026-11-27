@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import inspect
+import json
+import math
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, get_type_hints
@@ -73,7 +75,7 @@ class Tool:
 
         if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]{0,63}", self.name):
             raise ValueError("invalid tool name")
-        if not self.version or self.timeout <= 0:
+        if not self.version or not math.isfinite(self.timeout) or self.timeout <= 0:
             raise ValueError("version and positive timeout required")
         check_schema(self.input_schema)
         if self.input_schema.get("type") != "object":
@@ -148,7 +150,11 @@ class Tool:
         validate(self.input_schema, arguments, "invalid_arguments")
         if self.semantic is not None:
             try:
-                self.semantic(arguments)
+                snapshot = canonical(arguments)
+                isolated = json.loads(snapshot)
+                self.semantic(isolated)
+                if canonical(isolated) != snapshot:
+                    raise ValueError("semantic validators must not mutate arguments")
             except Exception as exc:
                 raise CoreError("semantic_rejection") from exc
 
