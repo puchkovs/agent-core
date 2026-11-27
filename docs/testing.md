@@ -361,3 +361,26 @@ Benchmarks were not rerun; no hot path changed beyond one conditional.
 environment, so zero Groq requests were sent. Version stays 0.1.0a1. Next: run the
 two commands in live-verification.md from a local terminal, then follow
 continuation.md. Nothing has been pushed; origin/main remains 75f7453.
+
+## Push, CI, provider install and benchmark — 2026-11-27
+
+Pushed 14f265f and cbc78ff to the private origin (fast-forward from 75f7453; no
+force, history preserved; repository confirmed PRIVATE). GitHub Actions
+offline-quality run for cbc78ff concluded success.
+
+Clean provider-extra installation (runtime lock plus `agent_core_runtime[providers]`
+from the built wheel, outside the source tree): `pip check` clean, installed smoke
+passed, and the Groq, OpenAI and Anthropic adapters construct from site-packages.
+
+Benchmark: on this host the offline overhead median is about 86-94 ms (p95 about
+103-111 ms), versus 2.0 ms recorded earlier on a different host. Interleaved runs of
+75f7453 and cbc78ff on this same host gave medians of 86.4/89.2/93.7 ms and
+93.2/85.7/86.0 ms: no regression from the Groq change. The difference from the
+recorded figure reflects this host's filesystem synchronization cost (new WAL/FULL
+database per sample); the recorded results file was not replaced and no comparative
+claim is made.
+
+The live procedure in live-verification.md is now one complete script (hidden key
+prompt, model availability check, both scenarios, evidence validation, literal-key
+leak check, cleanup). Its validator and leak check were exercised against synthetic
+evidence only; no Groq request has been sent and the version remains 0.1.0a1.
