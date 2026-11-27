@@ -42,3 +42,19 @@ The target v0.1.0 additionally requires completion of phases 9–16 in roadmap.m
 Native provider streaming and optional MCP are now required work, not accepted
 release deferrals. The restored baseline has been independently reproduced and
 private remote CI passed; the full new release gate remains unpassed.
+
+## Audit installation verification
+
+Implementation commit `57b7b0b60bf71f3ef0c8489bca6471b332f5a572` was pushed and
+matched remote main. `git fsck --full` passed. Updated source/wheel builds passed
+using hatchling 1.33.0. Clean minimal installation passed installed SDK smoke
+with IP network connections blocked and no httpx installed; installed CLI demo
+completed. Installing the hash-locked provider dependencies into that clean
+environment also passed `pip check` and the installed offline SDK smoke with
+httpx present. Distributions remain ignored under dist/ and are alpha artifacts.
+
+Current implementation CI: run 45922819563; inspect its final conclusion using
+`gh run view 45922819563`. Earlier baseline and mutation-fix CI runs passed.
+These checks do not complete the extended phases 9–16 or establish native
+streaming/MCP compatibility. Live verification and the full release gate remain
+unpassed. Continue Phase 9 from docs/continuation.md.
