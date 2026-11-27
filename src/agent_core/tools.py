@@ -6,7 +6,7 @@ import inspect
 import json
 import math
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, get_type_hints
 
 from jsonschema import Draft202012Validator
@@ -69,6 +69,9 @@ class Tool:
     output_schema: dict[str, Json] | None = None
     semantic: Callable[[dict[str, Json]], None] | None = None
     timeout: float = 30
+    _argument_validator: Callable[[dict[str, Json]], None] | None = field(
+        default=None, repr=False, compare=False
+    )
 
     def __post_init__(self) -> None:
         import re
@@ -115,6 +118,9 @@ class Tool:
             parsed = arguments.model_validate(kwargs, strict=True)
             return function(**parsed.model_dump())
 
+        def validate_arguments(values: dict[str, Json]) -> None:
+            arguments.model_validate(values, strict=True)
+
         # Keep coroutine classification so async work stays on the event loop.
         target = function if inspect.iscoroutinefunction(function) else invoke
         return cls(
@@ -127,6 +133,7 @@ class Tool:
             permissions=permissions,
             semantic=semantic,
             timeout=timeout,
+            _argument_validator=validate_arguments,
         )
 
     @property
@@ -148,6 +155,11 @@ class Tool:
 
     def validate(self, arguments: dict[str, Json]) -> None:
         validate(self.input_schema, arguments, "invalid_arguments")
+        if self._argument_validator is not None:
+            try:
+                self._argument_validator(arguments)
+            except ValueError as exc:
+                raise CoreError("invalid_arguments") from exc
         if self.semantic is not None:
             try:
                 snapshot = canonical(arguments)

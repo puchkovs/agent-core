@@ -8,14 +8,13 @@ commit (the commit cannot contain its own hash). The isolated `.venv` uses the
 existing hash-locked requirements; use `make check PYTHON=.venv/bin/python`.
 
 Baseline independently reproduced: 120 tests, 97.53% coverage. Current audit
-fixes: 125 tests, 97.54%; lint, format, strict mypy and three demos pass.
+fixes: 127 tests, 97.56%; lint, format, strict mypy and three demos pass.
 Initial remote CI run 45922505014 passed. Inspect later runs before declaring CI
 current. See progress.md and roadmap.md for the extended phases 9–16.
 
-Next: finish Phase 9. Investigate strict generated-callable input validation
-before dispatch (synchronous and asynchronous callables currently differ),
-provider malformed-object handling, cancellation admission races and transport
-bounds. Preserve dispatch/outcome persistence and conservative uncertainty.
+Next: finish Phase 9. Strict generated-callable input validation now runs before dispatch for
+both synchronous and asynchronous tools. Next investigate provider malformed-object
+handling, cancellation admission races, transport bounds and remaining audit areas. Preserve dispatch/outcome persistence and conservative uncertainty.
 Then complete provider review, streaming and MCP with behavioral tests, following
 the sequential roadmap. Original native streaming/MCP deferrals do not satisfy
 the newly requested release scope. Official provider reference pages were opened;

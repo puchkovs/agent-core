@@ -34,7 +34,8 @@ The example above returns an acceptance string; it does not write a file. See
 
 Schemas use Draft 2020-12, bounded size/depth and local `$defs` references.
 External references, schema rebasing and other dialects are rejected. The
-semantic validator is pure trusted host code; it must not mutate arguments,
+semantic validator receives an isolated JSON copy and changed values are rejected
+before dispatch. It is pure trusted host code; it must not mutate arguments,
 perform side effects or grant rights. A tool version identifies implementation
 semantics. Bump it when behavior or semantic constraints change.
 
@@ -45,3 +46,7 @@ conservatively uncertain, including failures before its internal side effect.
 To require structured final output, pass `output_schema` to `run` or `create`.
 The runtime parses and validates final JSON; invalid output produces
 `invalid_output`. This validates shape, not the truth of a model's answer.
+
+Generated callable inputs undergo strict Pydantic validation before dispatch for
+both sync and async callables, in addition to JSON Schema validation. Tool timeouts
+must be positive and finite.

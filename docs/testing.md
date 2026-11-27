@@ -73,3 +73,24 @@ NaN/infinite tool timeouts at registration. Five added regression cases pass:
 Remaining work: finish the engineering audit, then phases 10–16, including native
 provider streaming and optional MCP. Live provider calls still require explicit
 cost authority. No release tag, PyPI publication or public visibility change.
+
+## Strict callable admission follow-up
+
+Generated callable arguments now undergo strict Pydantic validation before
+approval or dispatch for both synchronous and asynchronous functions. Regression
+cases use integral floating-point input accepted by JSON Schema but rejected by
+strict Python integer validation; neither write executor runs, and both produce
+`invalid_arguments` rather than an uncertain dispatched write.
+
+Full `make check PYTHON=.venv/bin/python`: 127 tests pass, 97.56% combined
+coverage, all critical modules above 90%, Ruff/format, strict mypy, three demos.
+Dependency consistency passed; fresh runtime/provider advisory scan returned no
+known vulnerabilities (raw `evaluation/results/audit-advisories.json`).
+First audit commit `61b8864` passed remote CI run 45922709736.
+
+Raw overhead results from the earlier mutation/timeout working tree are retained
+in `evaluation/results/audit-overhead.json`: 100 measured samples after five
+warmups, median 84.9472275 ms, p95 122.097046 ms. The file records its dirty
+source fingerprint and base commit; it does not measure the later strict-input
+change. Host/filesystem conditions differ from the historical 2 ms run; no
+regression attribution or model-intelligence claim follows from this comparison.

@@ -149,3 +149,43 @@ async def test_semantic_mutation_rejected_before_dispatch(store):
     assert call.arguments == {"nested": {"value": "original"}}
     assert store.operations(run.id)[0].code == "semantic_rejection"
     assert all(event.kind != "tool.dispatched" for event in store.events(run.id))
+
+
+@pytest.mark.parametrize("asynchronous", [False, True])
+async def test_generated_strict_input_rejected_before_write_dispatch(store, asynchronous):
+    from agent_core import Call, Effect, Policy, Runtime
+    from agent_core.models import ScriptedModel
+
+    executed = []
+
+    def sync_write(value: int) -> int:
+        executed.append(value)
+        return value
+
+    async def async_write(value: int) -> int:
+        return sync_write(value)
+
+    tool = Tool.from_callable(
+        async_write if asynchronous else sync_write,
+        name="write",
+        effect=Effect.WRITE,
+    )
+    # JSON Schema accepts integral floating point values; strict Python int does not.
+    model = ScriptedModel(
+        (
+            Response(
+                calls=(Call(id="one", name="write", arguments={"value": 1.0}),), finish="tool_calls"
+            ),
+            Response(text="done"),
+        )
+    )
+    runtime = Runtime(
+        model,
+        Registry((tool,)),
+        store,
+        Policy(allowed_tools=frozenset({"write"}), approve_writes=False),
+    )
+    run = await runtime.run("validate before dispatch")
+    assert executed == []
+    assert store.operations(run.id)[0].code == "invalid_arguments"
+    assert all(event.kind != "tool.dispatched" for event in store.events(run.id))
