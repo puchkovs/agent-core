@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Add `GroqModel`, an OpenAI-compatible profile for Groq with native streaming,
+  `x_groq` usage normalization, documented reasoning controls and a final-JSON
+  fallback in place of unsupported tool-compatible schema output.
+- Live gate for v0.1.0 changed from OpenAI to Groq (free tier); OpenAI is
+  offline-verified with live verification blocked by quota; Anthropic remains
+  experimental. No live Groq result is recorded yet.
+
 ## 0.1.0a1 — 2026-11-27
 
 Initial engineering candidate: sequential model-directed tools; strict argument

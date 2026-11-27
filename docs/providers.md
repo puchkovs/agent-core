@@ -4,10 +4,13 @@
 |---|---|---|---|
 | `ScriptedModel` | Complete envelopes indexed by durable turn | Offline unit/E2E | Model intelligence claims |
 | `OpenAIChatModel` | HTTPS Chat Completions, text, client function calls, usage, JSON schema request | Mock HTTP round trips and runtime fixtures | Responses API, audio, images, server tools |
+| `GroqModel` | OpenAI-compatible Chat Completions profile for Groq: text, client function calls, native streaming, usage, final-JSON instruction with host validation | Offline fixtures; live gate pending | Native JSON-schema output, parallel tool calls, built-in/remote server tools, returned reasoning text |
 | `AnthropicModel` (experimental) | HTTPS Messages, explicit `2023-06-01` header, text/client-tool blocks, usage, opaque thinking replay | Offline fixtures only; not live-verified | Newer version profiles, server tools |
 
-**No real model endpoint was called for this candidate.** Fixture verification
-proves normalization behavior for the supplied shapes, not live service support.
+**No real model request has succeeded for this candidate.** Earlier OpenAI attempts
+failed with `provider_rate_limit` (account quota); no Groq request has been sent.
+Fixture verification proves normalization behavior for the supplied shapes, not
+live service support.
 No model name or general compatible-server claim is implied by these adapters.
 
 Install the `providers` extra, then instantiate an adapter with a host-provided
@@ -74,25 +77,63 @@ nested objects. Native structured output remains OpenAI request-level support
 for compatible models; Anthropic uses final-JSON instructions plus host schema
 validation. No universal schema portability or live compatibility is claimed.
 
-OpenAI live verification remains unrun: bounded paid authorization exists, but
-OPENAI_API_KEY is not inherited by the execution environment. Anthropic remains
-experimental and offline-verified.
-Use the existing opt-in live_smoke.py only after that authority is granted; do not
-put API keys in evidence files. Native token streaming is fixture-verified; see streaming.md.
+OpenAI live verification was attempted and failed with provider_rate_limit; it
+remains blocked on account quota. Anthropic remains experimental and
+offline-verified. Use the opt-in live_smoke.py only after cost/quota authority is
+granted; do not put API keys in evidence files. Native token streaming is fixture-verified; see streaming.md.
 
 Native streaming is now available with streaming=True; see [streaming](streaming.md)
 for exact fixture-verified scope. Earlier token-delta deferrals describe the historical candidate.
 
 The final live gate now verifies the exact sum and an unpredictable receipt from
 the tool observation, with known usage. See [secure live commands and release
-checklist](live-verification.md) for the two mandatory OpenAI modes and configured request limits.
+checklist](live-verification.md) for the two mandatory Groq modes and configured request limits.
 
-## Revised v0.1.0 acceptance
+## Groq profile — reviewed 2026-11-27
 
-OpenAI non-streaming and native-streaming tool/receipt verification are mandatory.
-Anthropic remains experimental and offline-verified; its adapter and all offline
-tests are preserved. Anthropic live verification is not a v0.1.0 release gate.
-No OpenAI model is live-verified until successful evidence is recorded. Each user
-must supply their own API credentials through the host environment; the project
-never ships maintainer credentials. Existing historical four-mode criteria are
-superseded by this release policy.
+`GroqModel` subclasses the OpenAI Chat adapter and sends the same wire format to
+`https://api.groq.com/openai/v1/chat/completions`; complete-envelope validation,
+SSE framing, call assembly and the no-partial-dispatch rule are shared, not copied.
+A configuration-only profile was insufficient, so the subclass changes exactly what
+the [Groq documentation](https://console.groq.com/docs/openai) requires:
+
+| Topic | Behavior |
+|---|---|
+| Tool calling | Local function tools on all listed models; `parallel_tool_calls` is sent as `false` (gpt-oss does not support parallel calls) and the runtime stays sequential |
+| Streaming | Native SSE; tool calls are dispatched only after the assembled response validates |
+| Structured output | Groq documents that JSON-schema output is unavailable with tool use and streaming, so no `response_format` is sent; the final-JSON instruction is added and the host validates the result. No endpoint schema guarantee is claimed |
+| Reasoning | `include_reasoning=false` plus `reasoning_effort` (`low` for gpt-oss-20b/120b, `none` for qwen3.8-27b) only for those documented models; other models receive neither parameter. Returned reasoning fields are rejected as unsupported content, not replayed |
+| Usage | Read from `x_groq.usage` (or top-level `usage`); a repeated receipt is accepted only when prompt, completion and total counters are identical, never summed. Missing usage stays unknown. OpenAI keeps rejecting any duplicate receipt |
+| Finish reasons | `stop` and `tool_calls` only; `length` and others are rejected as incomplete |
+| Unsupported fields | `messages[].name`, `logprobs`, `logit_bias`, `top_logprobs` and `n>1` are never sent |
+| Errors | 401/403 `provider_auth`; 429 `provider_rate_limit` (retryable signal, no automatic retry); 5xx `provider_unavailable`; other statuses, including 400 failed generations, 413, 422, 424, 498 and 499, `provider_response` |
+
+Free-plan limits listed on the Groq rate-limits page for `openai/gpt-oss-20b`,
+`openai/gpt-oss-120b` and `qwen/qwen3.8-27b`: 30 requests/minute, 1,000 requests/day,
+8,000 tokens/minute, 200,000 tokens/day. Reasoning tokens count against
+`max_completion_tokens`, so choose a limit that covers hidden reasoning. The model
+list and limits change; consult your own account limits page.
+
+```python
+import os
+from agent_core.providers.groq import GroqModel
+
+model = GroqModel("openai/gpt-oss-20b", os.environ["GROQ_API_KEY"], streaming=True)
+```
+
+## Compatibility matrix
+
+| Provider | Non-streaming | Native streaming | Status |
+|---|---|---|---|
+| Groq | Offline fixtures | Offline fixtures | Live verification pending (key unavailable to the execution environment) |
+| OpenAI | Offline fixtures | Offline fixtures | Live verification blocked by API rate limit/quota |
+| Anthropic | Offline fixtures | Offline fixtures | Experimental |
+
+## v0.1.0 acceptance
+
+Groq non-streaming and native-streaming tool/receipt verification within the free
+tier are mandatory. OpenAI is offline-verified; its live verification is blocked
+and is not a gate. Anthropic remains experimental and offline-verified. Groq
+results never imply original OpenAI API compatibility. No model is live-verified
+until successful evidence is recorded. Each user supplies their own credentials
+through the host environment; the project never ships maintainer credentials.

@@ -37,7 +37,11 @@ arbitrary external exactly-once guarantee, database encryption or automatic data
 retention. Deadlines cannot kill threads or recall remote effects. See SECURITY.md,
 streaming.md, mcp.md and testing.md for exact boundaries.
 
-OpenAI live tool/stream interoperability remains unverified pending credential
-availability. Two bounded OpenAI scenarios are authorized, six requests combined;
-no automatic retries. Anthropic remains experimental and offline-verified. Final v0.1.0 must remain blocked until those gates pass and
-candidate packages/CI are reverified for any resulting changes.
+Live tool/stream interoperability remains unverified for every provider. Two
+bounded Groq free-tier scenarios are authorized, six requests combined, no
+automatic retries; they await a key in the executing environment. OpenAI live
+verification is blocked by account quota. Anthropic remains experimental and
+offline-verified. Final v0.1.0 must remain blocked until the Groq gates pass and
+candidate packages/CI are reverified for any resulting changes. Provider
+responses with unknown fields (including returned reasoning text) are rejected,
+and a repeated Groq usage receipt is accepted only when its counters are identical.

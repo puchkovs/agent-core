@@ -34,7 +34,8 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 16 Final gates | Independent gates passed; live-provider release gate blocked | All local/CI/package/security gates; explicit release blockers |
 
 Current release acceptance supersedes historical dual-provider live gates:
-OpenAI complete-response and native-stream tool/receipt checks are mandatory;
-Anthropic remains experimental, offline-verified and optional for release.
-Paid OpenAI scope is authorized (six requests combined), currently blocked on
-credential availability in the execution environment.
+Groq complete-response and native-stream tool/receipt checks (free tier) are
+mandatory; OpenAI is offline-verified with live verification blocked by quota;
+Anthropic remains experimental and offline-verified. Groq scope is authorized
+(six requests combined), currently blocked on credential availability in the
+execution environment.

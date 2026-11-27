@@ -49,7 +49,7 @@ Verified offline only against deterministic HTTP streams. No real provider strea
 has been called. References: [OpenAI Chat](https://developers.openai.com/api/reference/resources/chat)
 and [Anthropic streaming](https://platform.claude.com/docs/en/build-with-claude/streaming).
 
-After explicit paid-call authority, the existing opt-in live_smoke.py accepts
+After explicit quota or cost authority, the existing opt-in live_smoke.py accepts
 AGENT_CORE_STREAMING=1 for native streaming. Run it separately for each provider
 and also in default complete-response mode; it requires a known usage receipt
 and records date, model, API profile and mode. This procedure has not been run live.

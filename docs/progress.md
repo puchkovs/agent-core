@@ -306,3 +306,29 @@ and distribution members also passed credential-pattern scans. Raw audit inputs
 remain outside the repository. Without the actual key in this process, exact
 literal-key comparison cannot be performed; pattern checks are scoped evidence.
 No history was rewritten, no credentials printed, no paid requests/retries made.
+
+## Groq profile and live-gate handover — 2026-11-27
+
+Started at 75f7453 (remote CI green). Added `GroqModel` (see providers.md): shared
+envelope/SSE validation, `x_groq` usage normalization, reasoning controls only for
+documented models, final-JSON fallback for the missing tool-compatible schema
+output, and a repeated-usage rule that is Groq-only (OpenAI still rejects any
+duplicate receipt). The opt-in live script gained a Groq mode requiring
+`AGENT_CORE_GROQ_FREE_TIER=1`, a 512-token output budget for hidden reasoning and
+an `output_token_limit` evidence field. Committed as 14f265f.
+
+Offline gates on the final tree: `make check` passed with 295 tests and 97.43%
+combined coverage (critical-component gate passed, groq.py fully covered), strict
+mypy, Ruff lint/format, three demos. Source/wheel builds, clean core and MCP
+installations with installed SDK/CLI smoke and `pip check`, and Groq import from
+the installed wheel passed. pip-audit on the runtime and MCP locks reported no known
+vulnerabilities. `evaluation/audit_candidate.py` passed over 231 historical blobs
+plus archives and docs; separate pattern scans of tracked files, commit messages,
+branches (main only) and tags (none) found no credential patterns or inappropriate
+references. The key variables were unset, so no literal-key comparison was possible.
+Benchmarks were not rerun; no hot path changed beyond one conditional.
+
+**Live verification: not run.** `GROQ_API_KEY` is not available to the execution
+environment, so zero Groq requests were sent. Version stays 0.1.0a1. Next: run the
+two commands in live-verification.md from a local terminal, then follow
+continuation.md. Nothing has been pushed; origin/main remains 75f7453.

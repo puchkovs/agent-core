@@ -155,7 +155,13 @@ roles are documented in [dependencies](docs/dependencies.md).
 
 ## Provider release status
 
-OpenAI must pass live non-streaming and native-streaming tool/receipt verification
-before v0.1.0. Anthropic is experimental and offline-verified, not live-verified;
-its implementation and deterministic tests remain available. Users must provide
-their own API credentials. No maintainer API key is included in this project.
+| Provider | Status |
+|---|---|
+| Groq | Offline-verified; live non-streaming and native-streaming checks pending |
+| OpenAI | Offline-verified; live verification blocked by API rate limit/quota |
+| Anthropic | Experimental; offline-verified |
+
+Groq must pass live non-streaming and native-streaming tool/receipt verification
+before v0.1.0; that result does not establish original OpenAI API compatibility.
+Users must provide their own API credentials. No maintainer API key is included in
+this project.
