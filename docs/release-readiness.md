@@ -1,30 +1,30 @@
 # Release readiness
 
-**Version 0.1.0a1; final v0.1.0 remains blocked.**
+**0.1.0a1 verified offline candidate. Final v0.1.0 is blocked.**
 
-Current offline gate: 231 passing tests, 97.51% combined coverage; lint, formatting,
-strict typing and three original demonstrations pass. The previous installed
-package gate is recorded in testing.md; final builds/clean installs must be
-repeated after completing the remaining implementation.
+Implemented phases 9–15: engineering audit, improved providers, native OpenAI and
+Anthropic streaming, optional MCP SDK 1.30.0/protocol 2025-11-25 Streamable HTTP
+tools, coherent SDK/CLI, expanded evaluation and current documentation.
 
-Phase 9 audit is complete for the existing sequential architecture. Phase 10
-offline provider improvements are complete; live endpoint compatibility is
-unverified. Native token streaming is implemented and fixture-verified for both adapters.
-Runtime.stream retains lifecycle events and adds provisional model.delta records.
+Phase 16 independently achievable gates passed: 257 tests, 97.42% combined
+coverage, critical components above 90%, lint, formatting, strict typing, three
+demos, dependency consistency, pinned advisory check, builds, three clean
+installation scopes, installed offline SDK/CLI smoke, history/archive/documentation
+checks and preceding remote CI. Final evidence-commit CI must also pass.
+See testing.md and security-reliability.md for actual scope and limitations.
 
-Remaining mandatory gates:
+## Mandatory remaining release gate
 
-1. Verify native streaming against live providers after paid-call authorization.
-2. Implement Phase 12 optional MCP with an explicit protocol/transport matrix.
-3. Complete phases 13–15 SDK/CLI, evaluation and documentation improvements.
-4. Run Phase 16 final package/install/security/documentation/CI verification.
-5. Obtain paid-call authority and host credentials for opt-in live provider checks.
+Host credentials and explicit paid-call authorization are required for live
+OpenAI and Anthropic tool-use and native-stream compatibility verification. No
+live compatibility claim is made. Record selected model IDs, API profiles, date,
+usage and tool invocation evidence without credentials. Fix differences with
+regression tests and rerun affected/full gates. Then rebuild and audit the final
+candidate before considering a version change or release tag.
 
-Private GitHub origin is synchronized at verified implementation milestones.
-Phase 9 CI run 45923353317 and Phase 10 CI run 45923492372 passed. Inspect the
-latest commit's CI separately. No release tag, final GitHub Release, PyPI
-publication, public visibility change or paid provider call has been made.
+No other independently achievable implementation phase is currently pending for
+the documented scope. Broader MCP protocols/transports, server tools, distributed
+execution, process sandboxing and additional model modalities are unsupported.
 
-No distributed execution, hard process sandbox or arbitrary external exactly-once
-guarantee is provided. See SECURITY.md for trust boundaries and testing.md for
-actual evidence and limitations.
+Repository remains private. No paid calls, final version bump, release tag,
+GitHub Release, PyPI publication or public visibility change is authorized.

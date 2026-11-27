@@ -1,18 +1,31 @@
-# Continue development
+# Continue from the verified offline candidate
 
-Existing private origin/main; preserve alpha version/history.
+Use the existing private puchkovs/agent-core origin/main and preserve all history.
+Run `git log -1`, `git status --short` and `gh run list --limit 3` for exact current
+HEAD and final CI. Source implementation completed at 52ce5db; subsequent commits
+record evaluation/docs/verification. Version remains 0.1.0a1. Do not restart phases
+9–15 or recreate the repository.
 
+Independent Phase 16 gates passed: 257 tests, 97.42% combined coverage, lint/format,
+strict typing, demos, builds, clean core/provider/MCP installs, installed offline
+SDK/CLI smoke, dependency/advisory and history/archive/doc checks. The final CI
+workflow additionally runs archive audit and installed optional SDK smoke. Verify
+its conclusion before reporting final CI success. See testing.md for exact evidence.
 
-## Phase 15 documentation — 2026-11-27
+The remaining release gate is live OpenAI and Anthropic tool/native-stream
+verification. It requires explicit paid-call authority and host credentials; do
+not run it merely because a key exists. Existing evaluation/live_smoke.py covers
+complete-response tool use; extend the opt-in live procedure to streaming after
+authority is supplied. Preserve model/API/date/usage/effect evidence without keys.
+Fix confirmed wire differences with deterministic fixtures; rerun make check,
+builds and clean installs after any change. No final v0.1.0 claim is permitted yet.
 
-Reconciled README, specification, architecture, security, providers and limits
-with current native streaming and MCP scope. Preserved historical ADR/evaluation
-evidence with explicit supersession notices. Local Markdown file links resolve;
-all Python doc blocks parse; README quick start executed successfully (result 42).
-CLI --help runs. Existing documented offline demos and lifecycle commands remain
-covered by the passing 257-test suite. Live/placeholder endpoint examples are
-configuration illustrations, not claimed executed service verification.
-Next: Phase 16 final gates, clean installations and candidate archive audits.
+Use existing .venv with requirements-dev.lock. MCP optional pins are also in
+requirements-mcp.lock. Current package artifacts are in ignored dist/. The
+reproducible audit command is `.venv/bin/python evaluation/audit_candidate.py`.
+Existing benchmark/evaluation evidence is in evaluation/results; do not replace
+historical results or infer model intelligence from runtime correctness fixtures.
 
-Do not repeat phases 9–15. Run final independent gates, record exact results
-and remaining paid-call blocker. Version must remain 0.1.0a1 until release gates pass.
+Keep the repository private. Final release/tag, PyPI publication and paid calls
+require separate authority. No further independent roadmap implementation is
+currently recorded as pending for the documented compatibility scope.

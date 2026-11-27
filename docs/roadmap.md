@@ -31,4 +31,4 @@ The following supersedes the earlier candidate deferrals for the target release.
 | 13 SDK/CLI | Complete for documented local SDK/CLI | Complete continuation, cleanup and structured-error flows |
 | 14 Evaluation | Complete for documented deterministic scope | Expanded scenarios and raw reproducible overhead evidence |
 | 15 Documentation | Complete for documented commands/scope | Verify supported commands and compatibility scope |
-| 16 Final gates | In progress; live provider gate blocked | All local/CI/package/security gates; explicit release blockers |
+| 16 Final gates | Independent gates passed; live-provider release gate blocked | All local/CI/package/security gates; explicit release blockers |

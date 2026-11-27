@@ -247,3 +247,30 @@ CLI --help runs. Existing documented offline demos and lifecycle commands remain
 covered by the passing 257-test suite. Live/placeholder endpoint examples are
 configuration illustrations, not claimed executed service verification.
 Next: Phase 16 final gates, clean installations and candidate archive audits.
+
+## Phase 16 independent final gates — 2026-11-27
+
+Final make check passed: 257 tests, 97.42% combined coverage, every critical
+component above 90%, Ruff lint/format (39 Python files), strict mypy (18 source
+files) and three demos. Dependency consistency and git fsck --full passed.
+Updated alpha source/wheel builds passed with hatchling 1.33.0.
+
+Clean minimal, provider and MCP installations passed the installed offline SDK
+smoke; minimal core contains neither httpx nor mcp. Installed CLI demo passed.
+Provider/MCP clean pip check passed. Pinned optional MCP advisory scan returned
+no known vulnerabilities. Raw environment/coverage, advisories and benchmarks are
+under evaluation/results. Current archive/history audit passed across 190 blobs,
+including original ancestry, credential patterns, wheel/source comparison, archive
+paths, license/typing markers and local documentation. Counts grow with evidence
+commits; rerun evaluation/audit_candidate.py for current counts.
+
+All preceding milestone CI runs passed, including documentation run 45930938229.
+Final CI adds full-history checkout, reproducible archive audit and clean installed
+SDK/MCP smoke; inspect its conclusion after pushing this final evidence commit.
+Security/reliability report: docs/security-reliability.md.
+
+Remaining mandatory blocker: real OpenAI and Anthropic endpoint/tool/native-stream
+verification requires host credentials and explicit paid-call authorization.
+No paid call, final version bump, release tag, GitHub Release, PyPI publication or
+public visibility change occurred. All independently achievable phases 11–16
+are completed for the documented scope; Phase 16 release gate remains blocked.

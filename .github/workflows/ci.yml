@@ -10,6 +10,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -21,3 +23,11 @@ jobs:
       - run: python -m venv /tmp/agent-core-clean
       - run: /tmp/agent-core-clean/bin/pip install dist/*.whl
       - run: cd /tmp && /tmp/agent-core-clean/bin/agent-core --db /tmp/installed-smoke.sqlite demo
+      - run: cd /tmp && /tmp/agent-core-clean/bin/python "$GITHUB_WORKSPACE/evaluation/installed_smoke.py"
+      - run: python evaluation/audit_candidate.py
+      - run: python -m venv /tmp/agent-core-optional
+      - run: /tmp/agent-core-optional/bin/pip install --require-hashes -r requirements-mcp.lock
+      - run: /tmp/agent-core-optional/bin/pip install --no-deps dist/*.whl
+      - run: cd /tmp && /tmp/agent-core-optional/bin/python "$GITHUB_WORKSPACE/evaluation/installed_smoke.py"
+      - run: /tmp/agent-core-optional/bin/python -c "from agent_core.mcp import MCPConfig; MCPConfig('smoke', 'https://fixture.example')"
+      - run: /tmp/agent-core-optional/bin/pip check
